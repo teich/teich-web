@@ -3,7 +3,10 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: "rgb(246, 237, 221)" }}>
+    <div
+      className="flex items-center justify-center min-h-screen"
+      style={{ backgroundColor: "rgb(245, 245, 240)" }}
+    >
       <Link href="/heritage">
         <Image
           src="/teich-crest.jpg"

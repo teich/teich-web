@@ -2,12 +2,14 @@ import Link from "next/link";
 
 export default function Heritage() {
   return (
-    <div style={{ backgroundColor: "rgb(246, 237, 221)" }} className="min-h-screen py-10">
-      <div className="max-w-4xl mx-auto px-6 bg-white/80 rounded-lg shadow-md py-8">
+    <div className="min-h-screen py-10 bg-[rgb(246,237,221)] dark:bg-gray-900">
+      <div className="max-w-4xl mx-auto px-6 bg-white/80 dark:bg-gray-800 rounded-lg shadow-md py-8 dark:text-gray-200">
         <header className="mb-10 text-center">
           <h1 className="text-3xl font-bold mb-4">The Surname Teich: A Historical and Genealogical Study</h1>
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center gap-4 mb-6">
             <Link href="/" className="text-blue-600 hover:underline">Return to Home</Link>
+            <span className="text-gray-400">|</span>
+            <Link href="/crest" className="text-blue-600 hover:underline">View Family Crest</Link>
           </div>
         </header>
 
