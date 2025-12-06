@@ -15,3 +15,4 @@ Open [http://localhost:3000](http://localhost:3000)
 - `/` - Home page with family crest
 - `/heritage` - Comprehensive historical and genealogical study of the Teich surname
 - `/crest` - Detailed explanation of the family crest symbolism
+
