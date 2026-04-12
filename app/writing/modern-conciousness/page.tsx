@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 
 type EssayBlock =
   | { type: "title"; content: string }
+  | { type: "note"; content: string }
   | { type: "heading"; content: string }
   | { type: "paragraph"; content: string }
   | { type: "list"; items: string[] };
@@ -32,6 +33,7 @@ function parseEssay(markdown: string): EssayBlock[] {
   const blocks: EssayBlock[] = [];
   let paragraph: string[] = [];
   let listItems: string[] = [];
+  let note: string[] = [];
 
   const flushParagraph = () => {
     if (paragraph.length === 0) {
@@ -57,18 +59,32 @@ function parseEssay(markdown: string): EssayBlock[] {
     listItems = [];
   };
 
+  const flushNote = () => {
+    if (note.length === 0) {
+      return;
+    }
+
+    blocks.push({
+      type: "note",
+      content: note.join(" ").trim(),
+    });
+    note = [];
+  };
+
   for (const line of lines) {
     const trimmed = line.trim();
 
     if (!trimmed) {
       flushParagraph();
       flushList();
+      flushNote();
       continue;
     }
 
     if (trimmed.startsWith("# ")) {
       flushParagraph();
       flushList();
+      flushNote();
       blocks.push({ type: "title", content: trimmed.slice(2).trim() });
       continue;
     }
@@ -76,12 +92,21 @@ function parseEssay(markdown: string): EssayBlock[] {
     if (trimmed.startsWith("## ")) {
       flushParagraph();
       flushList();
+      flushNote();
       blocks.push({ type: "heading", content: trimmed.slice(3).trim() });
+      continue;
+    }
+
+    if (trimmed.startsWith(">")) {
+      flushParagraph();
+      flushList();
+      note.push(trimmed.slice(1).trim());
       continue;
     }
 
     if (trimmed.startsWith("*")) {
       flushParagraph();
+      flushNote();
       if (/^\*[^*]+\*\s+--/.test(trimmed)) {
         listItems.push(trimmed);
       } else {
@@ -95,6 +120,7 @@ function parseEssay(markdown: string): EssayBlock[] {
 
   flushParagraph();
   flushList();
+  flushNote();
 
   return blocks;
 }
@@ -167,6 +193,22 @@ export default async function EssayPage() {
                       {block.content}
                     </h2>
                   </section>
+                );
+              }
+
+              if (block.type === "note") {
+                return (
+                  <aside
+                    key={`${block.type}-${index}`}
+                    className="mb-10 rounded-[1.5rem] border border-stone-700/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.75),rgba(245,238,228,0.88))] px-6 py-6 text-stone-700 shadow-[0_18px_40px_rgba(78,55,27,0.08)] sm:px-8"
+                  >
+                    <p className="mb-3 text-[0.72rem] uppercase tracking-[0.28em] text-stone-500">
+                      Author&apos;s Note
+                    </p>
+                    <p className="text-[1rem] leading-8 sm:text-[1.05rem]">
+                      {renderInlineMarkdown(block.content)}
+                    </p>
+                  </aside>
                 );
               }
 
