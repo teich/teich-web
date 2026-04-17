@@ -193,6 +193,12 @@ export default async function EssayPage() {
             <p className="mt-6 text-sm tracking-[0.18em] text-stone-500 uppercase">
               Oren Teich
             </p>
+            <Link
+              href="/reading"
+              className="mt-5 inline-flex border-b border-stone-500/30 pb-1 text-sm text-stone-600 transition-colors hover:border-emerald-900 hover:text-emerald-900"
+            >
+              View the reading list
+            </Link>
           </header>
 
           <div
@@ -272,6 +278,15 @@ export default async function EssayPage() {
 
               return null;
             })}
+
+            <footer className="mt-16 border-t border-stone-700/10 pt-8">
+              <Link
+                href="/reading"
+                className="inline-flex border-b border-stone-500/30 pb-1 text-sm text-stone-600 transition-colors hover:border-emerald-900 hover:text-emerald-900"
+              >
+                Continue to the reading list
+              </Link>
+            </footer>
           </div>
         </div>
       </article>

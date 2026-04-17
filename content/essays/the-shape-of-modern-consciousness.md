@@ -28,23 +28,3 @@ This framing matters because it resists the usual evasions. The problem is not j
 
 I am not offering a program or a solution. There are already enough programs, enough solutions, enough arguments about what comes next. What I am trying to name is the recognition itself: the sense that beneath our politics, our technologies, and our social arrangements lies a deeper training of perception, one that has made us at once more powerful and less able to encounter the world as alive, binding, and real. 
 
-## Read List
-
-*Escape from Freedom* -- Erich Fromm. The psychological structure of modern freedom and alienation.
-*Ishmael* -- Daniel Quinn. The civilizational myth of human separation from the rest of life.
-*Against the Machine*  -- Paul Kingsnorth. The systems we built have built us
-*Braiding Sweetgrass* -- Robin Wall Kimmerer. Relational knowing and an animate world.
-*The Power of Myth* -- Joseph Campbell. Myth as a structure of consciousness and meaning.
-*Iron John* -- Robert Bly. Initiation and psychic depth in a desacralized culture.
-*A World Appears* -- Michael Pollan. A contemporary map of sentience, feeling, thought, self, and the mystery of subjectivity.
-
-## To Read List
-
-*Why Liberalism Failed* -- Patrick Deneen. The political form taken by individuated modern consciousness.
-*Courting the Wild Twin* -- Martin Shaw. Mythopoesis, exile, and the restoration of symbolic life.
-*The Spell of the Sensuous* -- David Abram. Perception, language, and the loss of a living world.
-*The Sacred and the Profane* -- Mircea Eliade. The difference between sacred and secular modes of experience.
-*The Technological Society* -- Jacques Ellul. Technique as a civilizational logic that remakes perception and society.
-*The Abolition of Man* -- C. S. Lewis. The moral and anthropological costs of reductionism.
-*After Virtue* -- Alasdair MacIntyre. The fragmentation of moral worlds after shared traditions collapse.
-*The Master and His Emissary* -- Iain McGilchrist. How styles of attention shape culture at civilizational scale.

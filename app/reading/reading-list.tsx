@@ -131,7 +131,9 @@ function BookCard({ book }: { book: Book }) {
       </div>
 
       {book.note ? (
-        <p className="mt-4 text-[0.98rem] leading-7 text-stone-700">{book.note}</p>
+        <p className="mt-4 text-[0.98rem] leading-7 text-stone-700">
+          {book.note}
+        </p>
       ) : null}
 
       <div className="mt-auto flex flex-wrap items-baseline gap-x-4 gap-y-2 pt-5 text-sm">
@@ -170,12 +172,16 @@ function filterBook(book: Book, filter: ReadingFilter) {
   return true;
 }
 
+function sortTitle(title: string) {
+  return title.replace(/^(the|a|an)\s+/i, "");
+}
+
 function sortBooks(left: Book, right: Book) {
   if (left.status !== right.status) {
     return left.status === "read" ? -1 : 1;
   }
 
-  return left.title.localeCompare(right.title);
+  return sortTitle(left.title).localeCompare(sortTitle(right.title));
 }
 
 export default function ReadingList() {
@@ -187,7 +193,9 @@ export default function ReadingList() {
   const visibleShelves = shelfOrder
     .map((shelf) => ({
       shelf,
-      books: filteredBooks.filter((book) => book.shelf === shelf).sort(sortBooks),
+      books: filteredBooks
+        .filter((book) => book.shelf === shelf)
+        .sort(sortBooks),
     }))
     .filter((group) => group.books.length > 0);
 
@@ -199,7 +207,10 @@ export default function ReadingList() {
             <Link className="hover:text-stone-950" href="/">
               Home
             </Link>
-            <Link className="hover:text-stone-950" href="/writing/modern-conciousness">
+            <Link
+              className="hover:text-stone-950"
+              href="/writing/modern-conciousness"
+            >
               Modern Consciousness
             </Link>
           </nav>
@@ -216,8 +227,8 @@ export default function ReadingList() {
                 Reading List
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-700">
-                Books I have read, books I love, and books I want close at hand for
-                future reading and references.
+                Alphabetical list of books I've read that left an impact, and
+                the to-read that will
               </p>
             </div>
 

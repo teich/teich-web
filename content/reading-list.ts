@@ -133,6 +133,7 @@ export const books: Book[] = [
     author: "David Deutsch",
     status: "read",
     shelf: "Origins & the Living World",
+    note: "Explanations, not observation, tradition, or authority are the engine of unbounded human progress, and that there is no principled limit to what we can come to understand.",
   },
   {
     title: "Waking Up",
@@ -345,6 +346,12 @@ export const books: Book[] = [
     shelf: "Modern Systems & Their Discontents",
   },
   {
+    title: "Seeing Like a State",
+    author: "James C. Scott",
+    status: "to-read",
+    shelf: "Modern Systems & Their Discontents",
+  },
+  {
     title: "The Unsettling of America",
     author: "Wendell Berry",
     status: "to-read",
@@ -423,8 +430,9 @@ export const books: Book[] = [
   {
     title: "Confessions of an Economic Hit Man",
     author: "John Perkins",
-    status: "to-read",
+    status: "read",
     shelf: "Power, History & Society",
+    note: "3rd edition. Insider account of how the US uses development loans, rigged forecasts, and corporate consultants to convert sovereign nations into economic vassals — anecdotal and self-aggrandizing in places, but the mechanism it describes is real.",
   },
   {
     title: "The Shock Doctrine",
@@ -443,6 +451,7 @@ export const books: Book[] = [
     author: "Peter Watts",
     status: "read",
     shelf: "Speculative Fiction",
+    note: "Asks whether consciousness is an evolutionary dead end — a costly, parasitic overlay on cognition that truly alien intelligence would shed",
   },
   {
     title: "The Forever War",
@@ -455,6 +464,7 @@ export const books: Book[] = [
     author: "Charles Stross",
     status: "read",
     shelf: "Speculative Fiction",
+    note: "Tracks three generations of a family through the Singularity, from near-future gig-economy hustler to post-human descendants negotiating with the disassembled remains of the solar system — dense, dated in spots, and still the most vivid depiction of runaway intelligence in fiction.",
   },
   {
     title: "Glasshouse",
