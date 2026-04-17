@@ -143,6 +143,12 @@ export const books: Book[] = [
     note: "Explanations, not observation, tradition, or authority are the engine of unbounded human progress, and that there is no principled limit to what we can come to understand.",
   },
   {
+    title: "The WEIRDest People in the World",
+    author: "Joseph Henrich",
+    status: "to-read",
+    shelf: "Origins & the Living World",
+  },
+  {
     title: "Waking Up",
     author: "Sam Harris",
     status: "read",
@@ -361,6 +367,12 @@ export const books: Book[] = [
     shelf: "Modern Systems & Their Discontents",
   },
   {
+    title: "Shop Class as Soulcraft",
+    author: "Matthew B. Crawford",
+    status: "to-read",
+    shelf: "Modern Systems & Their Discontents",
+  },
+  {
     title: "Seeing Like a State",
     author: "James C. Scott",
     status: "to-read",
@@ -375,6 +387,12 @@ export const books: Book[] = [
   {
     title: "Re-Visioning Psychology",
     author: "James Hillman",
+    status: "to-read",
+    shelf: "Mind, Self & Formation",
+  },
+  {
+    title: "The Culture of Narcissism",
+    author: "Christopher Lasch",
     status: "to-read",
     shelf: "Mind, Self & Formation",
   },
