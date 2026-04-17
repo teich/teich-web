@@ -81,6 +81,13 @@ export const books: Book[] = [
     note: "The best biography ever written. Book 1 in Caro's LBJ series; a study of power and how it is wielded.",
   },
   {
+    title: "Tribe",
+    author: "Sebastian Junger",
+    status: "read",
+    shelf: "Power, History & Society",
+    aliases: ["Tribe: On Homecoming and Belonging"],
+  },
+  {
     title: "Man's Search for Meaning",
     author: "Viktor E. Frankl",
     status: "read",
@@ -150,6 +157,13 @@ export const books: Book[] = [
     shelf: "Mind, Self & Formation",
     note: "Writing as connection, meditation, and self-discovery. Want to start writing? Start here.",
     aliases: ["Writing Down the Bones: Freeing the Writer Within"],
+  },
+  {
+    title: "Four Thousand Weeks",
+    author: "Oliver Burkeman",
+    status: "read",
+    shelf: "Mind, Self & Formation",
+    aliases: ["Four Thousand Weeks: Time Management for Mortals"],
   },
   {
     title: "Competing Against Luck",
@@ -244,6 +258,7 @@ export const books: Book[] = [
     shelf: "Modern Systems & Their Discontents",
     aliases: ["Against the Machine"],
     mentionedIn: [modernConsciousness],
+    note: "Names the thing. Industrial modernity is not a set of problems to solve but a coherent machine systematically dissolving the human, the sacred, and the particular, written with the moral clarity of someone who stopped looking for a way to fix it and started asking how to stay human inside it.",
   },
   {
     title: "Savage Gods",
@@ -443,7 +458,7 @@ export const books: Book[] = [
   {
     title: "Globalization and Its Discontents",
     author: "Joseph E. Stiglitz",
-    status: "to-read",
+    status: "read",
     shelf: "Power, History & Society",
   },
   {
