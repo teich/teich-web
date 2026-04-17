@@ -83,11 +83,37 @@ function FilterButton({
   );
 }
 
+function BookshopIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-[1em] w-[1em]"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M7 8.5V7a5 5 0 0 1 10 0v1.5"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5.5 8.5h13l-.9 11H6.4l-.9-11Z"
+      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.25 13h5.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.25 16h3.5" />
+    </svg>
+  );
+}
+
 function BookCard({ book }: { book: Book }) {
   return (
     <article
       id={slugForBook(book)}
-      className="scroll-mt-8 border border-stone-800/10 bg-[#fffdf8] p-5 shadow-[0_12px_30px_rgba(57,43,24,0.08)]"
+      className="flex min-h-full scroll-mt-8 flex-col border border-stone-800/10 bg-[#fffdf8] p-5 shadow-[0_12px_30px_rgba(57,43,24,0.08)]"
     >
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
         <div className="min-w-0">
@@ -108,12 +134,15 @@ function BookCard({ book }: { book: Book }) {
         <p className="mt-4 text-[0.98rem] leading-7 text-stone-700">{book.note}</p>
       ) : null}
 
-      <div className="mt-5 flex flex-wrap items-center gap-3 text-sm">
+      <div className="mt-auto flex flex-wrap items-baseline gap-x-4 gap-y-2 pt-5 text-sm">
         <a
           href={bookshopSearchUrl(book)}
-          className="border-b border-emerald-800/30 pb-0.5 font-medium text-emerald-900 transition-colors hover:border-emerald-900"
+          aria-label={`Find ${book.title} on Bookshop.org`}
+          title="Find on Bookshop.org"
+          className="inline-flex items-baseline gap-1.5 text-emerald-900 transition-colors hover:text-emerald-700"
         >
-          Find on Bookshop.org
+          <BookshopIcon />
+          <span className="sr-only">Find on Bookshop.org</span>
         </a>
         {book.mentionedIn?.map((mention) => (
           <Link

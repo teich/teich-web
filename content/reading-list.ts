@@ -129,6 +129,12 @@ export const books: Book[] = [
     aliases: ["Meaning of Human Existence"],
   },
   {
+    title: "The Beginning of Infinity",
+    author: "David Deutsch",
+    status: "read",
+    shelf: "Origins & the Living World",
+  },
+  {
     title: "Waking Up",
     author: "Sam Harris",
     status: "read",
