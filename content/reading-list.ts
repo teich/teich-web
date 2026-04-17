@@ -250,6 +250,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Origins & the Living World",
     mentionedIn: [modernConsciousness],
+    note: "Directionally true, mythically overstated. The core insight that agriculture ruptured human self-understanding still lands.",
   },
   {
     title: "Braiding Sweetgrass",
@@ -257,6 +258,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Origins & the Living World",
     mentionedIn: [modernConsciousness],
+    note: "Braids Indigenous knowledge, botany, and gratitude into the clearest argument that the natural world is a web of relationships, not a pile of resources.",
   },
   {
     title: "Escape from Freedom",
@@ -301,6 +303,15 @@ export const books: Book[] = [
     note: "The political form taken by individuated modern consciousness.",
   },
   {
+    title: "Hospicing Modernity",
+    author: "Vanessa Machado de Oliveira",
+    status: "to-read",
+    shelf: "Modern Systems & Their Discontents",
+    aliases: [
+      "Hospicing Modernity: Facing Humanity's Wrongs and the Implications for Social Activism",
+    ],
+  },
+  {
     title: "The Spell of the Sensuous",
     author: "David Abram",
     status: "to-read",
@@ -312,6 +323,7 @@ export const books: Book[] = [
     author: "Tyson Yunkaporta",
     status: "read",
     shelf: "Origins & the Living World",
+    note: "Aboriginal thought as a lens to dismantle modern systems thinking from the outside in — less a book than a reorientation of how knowledge itself is structured.",
   },
   {
     title: "The Master and His Emissary",
@@ -374,11 +386,21 @@ export const books: Book[] = [
     mentionedIn: [modernConsciousness],
   },
   {
+    title: "The Quest for Community",
+    author: "Robert Nisbet",
+    status: "to-read",
+    shelf: "Power, History & Society",
+    aliases: [
+      "The Quest for Community: A Study in the Ethics of Order and Freedom",
+    ],
+  },
+  {
     title: "A World Appears",
     author: "Michael Pollan",
     status: "read",
     shelf: "Origins & the Living World",
     mentionedIn: [modernConsciousness],
+    note: "Why does thinking feel like anything?",
   },
   {
     title: "Nature and Madness",
