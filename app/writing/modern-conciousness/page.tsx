@@ -1,7 +1,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Lora } from "next/font/google";
+import { readingByTitle, slugForBook } from "@/content/reading-list";
 
 const displayFont = Cormorant_Garamond({
   subsets: ["latin"],
@@ -130,9 +132,24 @@ function renderInlineMarkdown(text: string) {
 
   return tokens.map((token, index) => {
     if (token.startsWith("*") && token.endsWith("*") && token.length > 2) {
+      const title = token.slice(1, -1);
+      const book = readingByTitle.get(title);
+
+      if (book) {
+        return (
+          <Link
+            key={`${token}-${index}`}
+            href={`/reading#${slugForBook(book)}`}
+            className="font-medium italic text-stone-900 underline decoration-stone-400/50 underline-offset-4 transition-colors hover:text-emerald-900 hover:decoration-emerald-900"
+          >
+            {title}
+          </Link>
+        );
+      }
+
       return (
         <em key={`${token}-${index}`} className="font-medium italic text-stone-900">
-          {token.slice(1, -1)}
+          {title}
         </em>
       );
     }
