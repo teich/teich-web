@@ -328,7 +328,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Modern Systems & Their Discontents",
     mentionedIn: [modernConsciousness],
-    note: "The political form taken by individuated modern consciousness.",
+    note: "The premise of the unencumbered, choosing self corrodes the very families, communities, and traditions that made self-government possible. The thesis is genuinely important, though Deneen himself has since drifted into the post-liberal reactionary project in ways the book itself doesn't require or endorse.",
   },
   {
     title: "Hospicing Modernity",
