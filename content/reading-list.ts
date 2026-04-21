@@ -201,7 +201,7 @@ export const books: Book[] = [
     author: "Carlota Perez",
     status: "read",
     shelf: "Modern Systems & Their Discontents",
-    note: "How technology changes society over time, in historical perspective.",
+    note: "Perez maps a recurring 50-to-60-year pattern in which each technological revolution moves through installation, financial bubble, crash, and then a golden age of deployment once institutions catch up, giving you a framework that makes the present moment in AI legible rather than unprecedented.",
     aliases: [
       "Technological Revolutions and Financial Capital: The Dynamics of Bubbles and Golden Ages",
     ],
@@ -328,7 +328,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Modern Systems & Their Discontents",
     mentionedIn: [modernConsciousness],
-    note: "The premise of the unencumbered, choosing self corrodes the very families, communities, and traditions that made self-government possible. The thesis is genuinely important, though Deneen himself has since drifted into the post-liberal reactionary project in ways the book itself doesn't require or endorse.",
+    note: "The unencumbered, choosing self corrodes the very families, communities, and traditions that made self-government possible. The thesis is genuinely important, though Deneen himself has become reactionary in ways the book itself doesn't require or endorse.",
   },
   {
     title: "Hospicing Modernity",
