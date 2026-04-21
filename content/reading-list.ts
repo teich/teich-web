@@ -14,6 +14,8 @@ export type Book = {
   author: string;
   status: ReadingStatus;
   shelf: ReadingShelf;
+  /** Date finished, as YYYY, YYYY-MM, or YYYY-MM-DD. */
+  dateRead?: string;
   note?: string;
   aliases?: string[];
   mentionedIn?: {
@@ -57,6 +59,7 @@ export const books: Book[] = [
     author: "Yuval Noah Harari",
     status: "read",
     shelf: "Origins & the Living World",
+    dateRead: "2011",
     note: "What are humans? How did we get here, evolutionarily?",
   },
   {
@@ -92,6 +95,7 @@ export const books: Book[] = [
     author: "Viktor E. Frankl",
     status: "read",
     shelf: "Myth, Spirit & Meaning",
+    dateRead: "2014-06-06",
     note: "First half Holocaust memoir, second half Frankl's philosophy. Very hard to read, and very worthwhile.",
   },
   {
@@ -109,6 +113,7 @@ export const books: Book[] = [
     author: "Michael Pollan",
     status: "read",
     shelf: "Origins & the Living World",
+    dateRead: "2006",
     note: "I didn't know how to eat for weeks after reading this.",
     aliases: ["Omnivore's Dilemma"],
   },
@@ -140,6 +145,7 @@ export const books: Book[] = [
     author: "David Deutsch",
     status: "read",
     shelf: "Origins & the Living World",
+    dateRead: "2024-12",
     note: "Explanations, not observation, tradition, or authority are the engine of unbounded human progress, and that there is no principled limit to what we can come to understand.",
   },
   {
@@ -161,6 +167,7 @@ export const books: Book[] = [
     author: "Natalie Goldberg",
     status: "read",
     shelf: "Mind, Self & Formation",
+    dateRead: "2013-07-23",
     note: "Writing as connection, meditation, and self-discovery. Want to start writing? Start here.",
     aliases: ["Writing Down the Bones: Freeing the Writer Within"],
   },
@@ -201,6 +208,7 @@ export const books: Book[] = [
     author: "Carlota Perez",
     status: "read",
     shelf: "Modern Systems & Their Discontents",
+    dateRead: "2014-02-13",
     note: "Perez maps a recurring 50-to-60-year pattern in which each technological revolution moves through installation, financial bubble, crash, and then a golden age of deployment once institutions catch up, giving you a framework that makes the present moment in AI legible rather than unprecedented.",
     aliases: [
       "Technological Revolutions and Financial Capital: The Dynamics of Bubbles and Golden Ages",
@@ -262,6 +270,7 @@ export const books: Book[] = [
     author: "Paul Kingsnorth",
     status: "read",
     shelf: "Modern Systems & Their Discontents",
+    dateRead: "2026-04",
     aliases: ["Against the Machine"],
     mentionedIn: [modernConsciousness],
     note: "Names the thing. Industrial modernity is not a set of problems to solve but a coherent machine systematically dissolving the human, the sacred, and the particular, written with the moral clarity of someone who stopped looking for a way to fix it and started asking how to stay human inside it.",
@@ -277,6 +286,7 @@ export const books: Book[] = [
     author: "Daniel Quinn",
     status: "read",
     shelf: "Origins & the Living World",
+    dateRead: "1996",
     mentionedIn: [modernConsciousness],
     note: "Directionally true, mythically overstated. The core insight that agriculture ruptured human self-understanding still lands.",
   },
@@ -285,6 +295,7 @@ export const books: Book[] = [
     author: "Robin Wall Kimmerer",
     status: "read",
     shelf: "Origins & the Living World",
+    dateRead: "2025",
     mentionedIn: [modernConsciousness],
     note: "Braids Indigenous knowledge, botany, and gratitude into the clearest argument that the natural world is a web of relationships, not a pile of resources.",
   },
@@ -307,6 +318,7 @@ export const books: Book[] = [
     author: "Robert Bly",
     status: "read",
     shelf: "Mind, Self & Formation",
+    dateRead: "2015",
     mentionedIn: [modernConsciousness],
   },
   {
@@ -327,6 +339,7 @@ export const books: Book[] = [
     author: "Patrick Deneen",
     status: "read",
     shelf: "Modern Systems & Their Discontents",
+    dateRead: "2026-04-21",
     mentionedIn: [modernConsciousness],
     note: "The unencumbered, choosing self corrodes the very families, communities, and traditions that made self-government possible. The thesis is genuinely important, though Deneen himself has become reactionary in ways the book itself doesn't require or endorse.",
   },
@@ -351,6 +364,7 @@ export const books: Book[] = [
     author: "Tyson Yunkaporta",
     status: "read",
     shelf: "Origins & the Living World",
+    dateRead: "2025",
     note: "Aboriginal thought as a lens to dismantle modern systems thinking from the outside in — less a book than a reorientation of how knowledge itself is structured.",
   },
   {
@@ -445,6 +459,7 @@ export const books: Book[] = [
     author: "Michael Pollan",
     status: "read",
     shelf: "Origins & the Living World",
+    dateRead: "2026",
     mentionedIn: [modernConsciousness],
     note: "Why does thinking feel like anything?",
   },

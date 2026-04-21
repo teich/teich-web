@@ -109,6 +109,25 @@ function BookshopIcon() {
   );
 }
 
+function formatDateRead(dateRead: string) {
+  const [year, month, day] = dateRead.split("-").map(Number);
+
+  if (!year || month === 0 || day === 0) {
+    return dateRead;
+  }
+
+  if (!month) {
+    return String(year);
+  }
+
+  const date = new Date(year, month - 1, day || 1);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    ...(day ? { day: "numeric" } : {}),
+    year: "numeric",
+  }).format(date);
+}
+
 function BookCard({ book }: { book: Book }) {
   return (
     <article
@@ -124,6 +143,11 @@ function BookCard({ book }: { book: Book }) {
             {book.title}
           </h3>
           <p className="mt-1 text-sm text-stone-600">{book.author}</p>
+          {book.dateRead ? (
+            <p className="mt-2 text-xs font-medium uppercase tracking-[0.16em] text-stone-500">
+              Read {formatDateRead(book.dateRead)}
+            </p>
+          ) : null}
         </div>
         <div className="flex justify-end">
           <StatusBadge status={book.status} />
