@@ -389,13 +389,17 @@ export const books: Book[] = [
   {
     title: "Seeing Like a State",
     author: "James C. Scott",
-    status: "to-read",
+    status: "read",
+    dateRead: "2025-05-20",
+    note: "How states turn forests into lumber, cities into grids, people into categories — and why that simplification so often goes disastrously wrong.",
     shelf: "Modern Systems & Their Discontents",
   },
   {
     title: "The Unsettling of America",
     author: "Wendell Berry",
-    status: "to-read",
+    status: "read",
+    dateRead: "2026-06-01",
+    note: "Nominally about agriculture, in fact about everything I care about - quality, care, community, depth. Required reading.",
     shelf: "Origins & the Living World",
   },
   {
