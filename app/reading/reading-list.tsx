@@ -231,11 +231,20 @@ export default function ReadingList() {
             <Link className="hover:text-stone-950" href="/">
               Home
             </Link>
+            <Link className="hover:text-stone-950" href="/writing">
+              Writing
+            </Link>
             <Link
               className="hover:text-stone-950"
               href="/writing/modern-conciousness"
             >
               Modern Consciousness
+            </Link>
+            <Link
+              className="hover:text-stone-950"
+              href="/writing/formation-of-boys"
+            >
+              Formation of Boys
             </Link>
           </nav>
 

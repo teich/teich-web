@@ -53,6 +53,11 @@ const modernConsciousness = {
   href: "/writing/modern-conciousness",
 };
 
+const formationOfBoys = {
+  title: "The Formation of Boys",
+  href: "/writing/formation-of-boys",
+};
+
 export const books: Book[] = [
   {
     title: "Sapiens",
@@ -89,6 +94,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Power, History & Society",
     aliases: ["Tribe: On Homecoming and Belonging"],
+    mentionedIn: [formationOfBoys],
   },
   {
     title: "Man's Search for Meaning",
@@ -96,6 +102,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Myth, Spirit & Meaning",
     dateRead: "2014-06-06",
+    mentionedIn: [formationOfBoys],
     note: "First half Holocaust memoir, second half Frankl's philosophy. Very hard to read, and very worthwhile.",
   },
   {
@@ -177,6 +184,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Mind, Self & Formation",
     aliases: ["Four Thousand Weeks: Time Management for Mortals"],
+    mentionedIn: [formationOfBoys],
   },
   {
     title: "Competing Against Luck",
@@ -304,14 +312,14 @@ export const books: Book[] = [
     author: "Erich Fromm",
     status: "read",
     shelf: "Mind, Self & Formation",
-    mentionedIn: [modernConsciousness],
+    mentionedIn: [modernConsciousness, formationOfBoys],
   },
   {
     title: "The Power of Myth",
     author: "Joseph Campbell",
     status: "read",
     shelf: "Myth, Spirit & Meaning",
-    mentionedIn: [modernConsciousness],
+    mentionedIn: [modernConsciousness, formationOfBoys],
   },
   {
     title: "Iron John",
@@ -319,7 +327,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Mind, Self & Formation",
     dateRead: "2015",
-    mentionedIn: [modernConsciousness],
+    mentionedIn: [modernConsciousness, formationOfBoys],
   },
   {
     title: "Courting the Wild Twin",
@@ -340,7 +348,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Modern Systems & Their Discontents",
     dateRead: "2026-04-21",
-    mentionedIn: [modernConsciousness],
+    mentionedIn: [modernConsciousness, formationOfBoys],
     note: "The unencumbered, choosing self corrodes the very families, communities, and traditions that made self-government possible. The thesis is genuinely important, though Deneen himself has become reactionary in ways the book itself doesn't require or endorse.",
   },
   {
@@ -372,19 +380,21 @@ export const books: Book[] = [
     author: "Iain McGilchrist",
     status: "to-read",
     shelf: "Mind, Self & Formation",
-    mentionedIn: [modernConsciousness],
+    mentionedIn: [modernConsciousness, formationOfBoys],
   },
   {
     title: "Tools for Conviviality",
     author: "Ivan Illich",
     status: "to-read",
     shelf: "Modern Systems & Their Discontents",
+    mentionedIn: [formationOfBoys],
   },
   {
     title: "Shop Class as Soulcraft",
     author: "Matthew B. Crawford",
     status: "to-read",
     shelf: "Modern Systems & Their Discontents",
+    mentionedIn: [formationOfBoys],
   },
   {
     title: "Seeing Like a State",
@@ -393,6 +403,7 @@ export const books: Book[] = [
     dateRead: "2025-05-20",
     note: "How states turn forests into lumber, cities into grids, people into categories — and why that simplification so often goes disastrously wrong.",
     shelf: "Modern Systems & Their Discontents",
+    mentionedIn: [formationOfBoys],
   },
   {
     title: "The Unsettling of America",
@@ -401,6 +412,7 @@ export const books: Book[] = [
     dateRead: "2026-06-01",
     note: "Nominally about agriculture, in fact about everything I care about - quality, care, community, depth. Required reading.",
     shelf: "Origins & the Living World",
+    mentionedIn: [formationOfBoys],
   },
   {
     title: "Re-Visioning Psychology",
@@ -425,7 +437,7 @@ export const books: Book[] = [
     author: "Mircea Eliade",
     status: "to-read",
     shelf: "Myth, Spirit & Meaning",
-    mentionedIn: [modernConsciousness],
+    mentionedIn: [modernConsciousness, formationOfBoys],
   },
   {
     title: "The Technological Society",
@@ -457,6 +469,29 @@ export const books: Book[] = [
     aliases: [
       "The Quest for Community: A Study in the Ethics of Order and Freedom",
     ],
+    mentionedIn: [formationOfBoys],
+  },
+  {
+    title: "Of Boys and Men",
+    author: "Richard V. Reeves",
+    status: "read",
+    shelf: "Mind, Self & Formation",
+    aliases: [
+      "Of Boys and Men: Why the Modern Male Is Struggling, Why It Matters, and What to Do about It",
+    ],
+    mentionedIn: [formationOfBoys],
+    note: "The data and policy case for taking boys' and men's struggles seriously without treating gender equality as zero-sum.",
+  },
+  {
+    title: "The Anxious Generation",
+    author: "Jonathan Haidt",
+    status: "read",
+    shelf: "Mind, Self & Formation",
+    aliases: [
+      "The Anxious Generation: How the Great Rewiring of Childhood Is Causing an Epidemic of Mental Illness",
+    ],
+    mentionedIn: [formationOfBoys],
+    note: "A phone-based account of the mental-health crisis now shaping childhood and adolescence.",
   },
   {
     title: "A World Appears",
