@@ -75,6 +75,17 @@ export const books: Book[] = [
     note: "Joseph Campbell is in a class of his own: myths of humanity, and the truths underneath them.",
   },
   {
+    title: "The Art of Pilgrimage",
+    author: "Phil Cousineau",
+    status: "read",
+    shelf: "Myth, Spirit & Meaning",
+    dateRead: "2026-09-10",
+    note: "The perfect book at the perfect time. I've struggled with the why of travel; this is an answer—deeply spiritual and meaningful, treating pilgrimage as an inner journey as much as a physical one.",
+    aliases: [
+      "The Art of Pilgrimage: The Seeker's Guide to Making Travel Sacred",
+    ],
+  },
+  {
     title: "The Hero with a Thousand Faces",
     author: "Joseph Campbell",
     status: "read",
@@ -223,6 +234,17 @@ export const books: Book[] = [
     ],
   },
   {
+    title: "The Future and Its Enemies",
+    author: "Virginia Postrel",
+    status: "read",
+    shelf: "Modern Systems & Their Discontents",
+    dateRead: "2026-09-08",
+    note: "A book I wish had been a long essay, but its point lands: we cannot fight the future; we have to create it. The dynamism-versus-stasis frame is clarifying, though reality needs more nuance than the dichotomy allows.",
+    aliases: [
+      "The Future and Its Enemies: The Growing Conflict Over Creativity, Enterprise, and Progress",
+    ],
+  },
+  {
     title: "The Checklist Manifesto",
     author: "Atul Gawande",
     status: "read",
@@ -350,6 +372,13 @@ export const books: Book[] = [
     dateRead: "2026-04-21",
     mentionedIn: [modernConsciousness, formationOfBoys],
     note: "The unencumbered, choosing self corrodes the very families, communities, and traditions that made self-government possible. The thesis is genuinely important, though Deneen himself has become reactionary in ways the book itself doesn't require or endorse.",
+  },
+  {
+    title: "To Arrive Where We Started",
+    author: "Ian Marcus Corbin",
+    status: "to-read",
+    shelf: "Modern Systems & Their Discontents",
+    aliases: ["To Arrive Where We Started: Belonging in the Modern World"],
   },
   {
     title: "Hospicing Modernity",
