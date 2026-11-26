@@ -18,7 +18,8 @@ struct Book {
   model: mat4x4f,
   dims: vec4f,  // width, height, thickness, texture layer
   tint: vec4f,  // jacket colour (linear), alpha
-  misc: vec4f,  // cover loaded, high-res cover, ground z, seed
+  misc: vec4f,  // cover loaded, high-res cover, ground z, seed (+2 if read)
+  order: vec4f, // depth slab, slab count
 };
 
 @group(0) @binding(0) var<uniform> G: Globals;
@@ -75,6 +76,23 @@ fn vs(v: VIn, @builtin(instance_index) i: u32) -> VOut {
   let world = b.model * vec4f(local, 1.0);
   var o: VOut;
   o.pos = G.viewProj * world;
+
+  // Drifting books tilt freely and would cut through one another, so each
+  // gets its own slab of the depth range: whole books sort against each
+  // other, while a book's own faces still sort correctly within its slab.
+  // Slab 0 is shared by the books on the shelves, which keep true depth.
+  let own = o.pos.z / o.pos.w;
+  var within = 1.0 - own;
+  if (b.order.x > 0.5) {
+    let reach = length(b.dims.xyz) * 0.56 * length(b.model[0].xyz);
+    let front = G.viewProj * vec4f(0.0, 0.0, b.model[3].z + reach, 1.0);
+    let back = G.viewProj * vec4f(0.0, 0.0, b.model[3].z - reach, 1.0);
+    let far = back.z / back.w;
+    within = (far - own) / (far - front.z / front.w);
+  }
+  let depth = 1.0 - (b.order.x + mix(0.02, 0.98, clamp(within, 0.0, 1.0))) / b.order.y;
+  o.pos.z = depth * o.pos.w;
+
   // A faded-out book must not hide the ones behind it.
   if (b.tint.a <= 0.0) {
     o.pos = vec4f(0.0, 0.0, 2.0, 1.0);

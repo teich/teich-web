@@ -60,7 +60,7 @@ const COVER_MIPS = 5;
 const SPINE_W = 64;
 const SPINE_H = 512;
 const SPINE_MIPS = 4;
-const STRIDE = 28;
+const STRIDE = 32;
 const FLOW = 1 / 170;
 /** How far a book's landing has to progress before it leaves the stream. */
 const CALL = 0.15;
@@ -381,6 +381,14 @@ export async function createEngine(options: Options): Promise<Engine | null> {
     sharp: 0,
     tint: def.color.map(toLinear) as [number, number, number],
   }));
+
+  // Drifting books are drawn in a fixed front-to-back order (highest fliers
+  // in front) so that tilted neighbours never cut through each other.
+  const flightOrder = new Array<number>(count);
+  state
+    .map((book, i) => [book.r[1], i])
+    .sort((a, b) => a[0] - b[0])
+    .forEach(([, i], rank) => (flightOrder[i] = rank + 1));
 
   let selected = -1;
   let dim = 0;
@@ -761,6 +769,10 @@ export async function createEngine(options: Options): Promise<Engine | null> {
         Math.abs(instances[o + 10]) * t0 * 0.5;
       instances[o + 26] = mix(-t0, pz - rise - 30, smooth(b.held));
       instances[o + 27] = b.r[9] + (b.def.read ? 2 : 0);
+      const adrift = !still && b.land < CALL;
+      instances[o + 28] =
+        b.held > 0.01 ? count + 2 : adrift ? (b.hover > 0.01 ? count + 1 : flightOrder[i]) : 0;
+      instances[o + 29] = count + 3;
     }
 
     // Camera: straight down at the middle of the viewport, with a frustum
@@ -862,11 +874,11 @@ export async function createEngine(options: Options): Promise<Engine | null> {
       const x = clientX - stageW / 2;
       const y = viewH / 2 - clientY;
       let best: number | null = null;
-      let nearest = -Infinity;
+      let nearest = -1;
       for (let i = 0; i < count; i++) {
         const o = i * STRIDE;
         if (state[i].land >= CALL || instances[o + 23] < 0.5) continue;
-        const z = instances[o + 14];
+        const z = instances[o + 28];
         if (z <= nearest) continue;
         // Project the front cover's corners and test the point against them.
         const hw = instances[o + 16] / 2, hh = instances[o + 17] / 2, ht = instances[o + 18] / 2;
