@@ -1,0 +1,433 @@
+{
+  "a-short-history-of-nearly-everything-bill-bryson": {
+    "w": 800,
+    "h": 1216,
+    "color": "#293d66",
+    "pages": 592
+  },
+  "a-world-appears-michael-pollan": {
+    "w": 800,
+    "h": 1216,
+    "color": "#4a5879",
+    "pages": 320
+  },
+  "accelerando-charles-stross": {
+    "w": 600,
+    "h": 800,
+    "color": "#3f3b3c",
+    "pages": 448
+  },
+  "across-realtime-vernor-vinge": {
+    "w": 282,
+    "h": 475,
+    "color": "#375063",
+    "pages": 532
+  },
+  "after-virtue-alasdair-macintyre": {
+    "w": 800,
+    "h": 1202,
+    "color": "#bcbdbb",
+    "pages": 286
+  },
+  "against-the-machine-on-the-unmaking-of-humanity-paul-kingsnorth": {
+    "w": 800,
+    "h": 1208,
+    "color": "#090a05",
+    "pages": 368
+  },
+  "altered-carbon-richard-k-morgan": {
+    "w": 800,
+    "h": 1208,
+    "color": "#f4ced4",
+    "pages": 496
+  },
+  "blindsight-peter-watts": {
+    "w": 800,
+    "h": 1228,
+    "color": "#080809",
+    "pages": 384
+  },
+  "braiding-sweetgrass-robin-wall-kimmerer": {
+    "w": 800,
+    "h": 1235,
+    "color": "#f2f1ec",
+    "pages": 409
+  },
+  "competing-against-luck-clayton-m-christensen": {
+    "w": 800,
+    "h": 1208,
+    "color": "#ece6d7",
+    "pages": 288
+  },
+  "confessions-of-an-economic-hit-man-john-perkins": {
+    "w": 800,
+    "h": 1238,
+    "color": "#757773",
+    "pages": 295
+  },
+  "courting-the-wild-twin-martin-shaw": {
+    "w": 800,
+    "h": 1227,
+    "color": "#432040",
+    "pages": 144
+  },
+  "escape-from-freedom-erich-fromm": {
+    "w": 800,
+    "h": 1219,
+    "color": "#d1bd3c",
+    "pages": 305
+  },
+  "flow-mihaly-csikszentmihalyi": {
+    "w": 800,
+    "h": 1212,
+    "color": "#1fbeca",
+    "pages": 317
+  },
+  "fooled-by-randomness-nassim-nicholas-taleb": {
+    "w": 473,
+    "h": 720,
+    "color": "#1d140e",
+    "pages": 312
+  },
+  "four-thousand-weeks-oliver-burkeman": {
+    "w": 800,
+    "h": 1233,
+    "color": "#e8db69",
+    "pages": 280
+  },
+  "glasshouse-charles-stross": {
+    "w": 600,
+    "h": 800,
+    "color": "#f6f7f8",
+    "pages": 368
+  },
+  "globalization-and-its-discontents-joseph-e-stiglitz": {
+    "w": 510,
+    "h": 680,
+    "color": "#2c2628",
+    "pages": 288
+  },
+  "hospicing-modernity-vanessa-machado-de-oliveira": {
+    "w": 800,
+    "h": 1200,
+    "color": "#e0d4cc",
+    "pages": 304
+  },
+  "iron-john-robert-bly": {
+    "w": 800,
+    "h": 1200,
+    "color": "#cbb6a8",
+    "pages": 288
+  },
+  "ishmael-daniel-quinn": {
+    "w": 800,
+    "h": 1229,
+    "color": "#e5d1b8",
+    "pages": 264
+  },
+  "man-s-search-for-meaning-viktor-e-frankl": {
+    "w": 800,
+    "h": 1236,
+    "color": "#9893a2",
+    "pages": 192
+  },
+  "myths-to-live-by-joseph-campbell": {
+    "w": 800,
+    "h": 1277,
+    "color": "#0f2a2a",
+    "pages": 276
+  },
+  "nature-and-madness-paul-shepard": {
+    "w": 333,
+    "h": 500,
+    "color": "#683518",
+    "pages": 178
+  },
+  "nexus-ramez-naam": {
+    "w": 800,
+    "h": 1200,
+    "color": "#060d22",
+    "pages": 448
+  },
+  "of-boys-and-men-richard-v-reeves": {
+    "w": 800,
+    "h": 1239,
+    "color": "#fa8b38",
+    "pages": 256
+  },
+  "re-visioning-psychology-james-hillman": {
+    "w": 311,
+    "h": 475,
+    "color": "#8c8e54",
+    "pages": 304
+  },
+  "religion-for-atheists-alain-de-botton": {
+    "w": 800,
+    "h": 1232,
+    "color": "#545454",
+    "pages": 320
+  },
+  "sand-talk-tyson-yunkaporta": {
+    "w": 800,
+    "h": 1208,
+    "color": "#e9d6d3",
+    "pages": 256
+  },
+  "sapiens-yuval-noah-harari": {
+    "w": 800,
+    "h": 1208,
+    "color": "#f2efe8",
+    "pages": 456
+  },
+  "savage-gods-paul-kingsnorth": {
+    "w": 800,
+    "h": 1091,
+    "color": "#c7d78a",
+    "pages": 155
+  },
+  "seeing-like-a-state-james-c-scott": {
+    "w": 800,
+    "h": 1207,
+    "color": "#ddd8d6",
+    "pages": 454
+  },
+  "shop-class-as-soulcraft-matthew-b-crawford": {
+    "w": 800,
+    "h": 1224,
+    "color": "#514845",
+    "pages": 246
+  },
+  "smoke-hole-martin-shaw": {
+    "w": 800,
+    "h": 1236,
+    "color": "#c26d24",
+    "pages": 144
+  },
+  "snow-crash-neal-stephenson": {
+    "w": 800,
+    "h": 1216,
+    "color": "#3a4b66",
+    "pages": 460
+  },
+  "technological-revolutions-and-financial-capital-carlota-perez": {
+    "w": 336,
+    "h": 475,
+    "color": "#433269",
+    "pages": 216
+  },
+  "the-abolition-of-man-c-s-lewis": {
+    "w": 800,
+    "h": 1204,
+    "color": "#dfadb2",
+    "pages": 121
+  },
+  "the-advantage-patrick-lencioni": {
+    "w": 800,
+    "h": 1199,
+    "color": "#e39093",
+    "pages": 240
+  },
+  "the-anxious-generation-jonathan-haidt": {
+    "w": 800,
+    "h": 1216,
+    "color": "#543413",
+    "pages": 395
+  },
+  "the-art-of-pilgrimage-phil-cousineau": {
+    "w": 701,
+    "h": 1000,
+    "color": "#735b5a",
+    "pages": 288
+  },
+  "the-beginning-of-infinity-david-deutsch": {
+    "w": 600,
+    "h": 906,
+    "color": "#050608",
+    "pages": 487
+  },
+  "the-checklist-manifesto-atul-gawande": {
+    "w": 800,
+    "h": 1200,
+    "color": "#c4121d",
+    "pages": 209
+  },
+  "the-city-and-the-stars-arthur-c-clarke": {
+    "w": 800,
+    "h": 1277,
+    "color": "#ddbb63",
+    "pages": 254
+  },
+  "the-culture-of-narcissism-christopher-lasch": {
+    "w": 800,
+    "h": 1200,
+    "color": "#6f726e",
+    "pages": 312
+  },
+  "the-enemy-papers-barry-b-longyear": {
+    "w": 331,
+    "h": 500,
+    "color": "#b9d7b3",
+    "pages": 657
+  },
+  "the-first-fifteen-lives-of-harry-august-claire-north": {
+    "w": 800,
+    "h": 1200,
+    "color": "#354569",
+    "pages": 416
+  },
+  "the-forever-war-joe-haldeman": {
+    "w": 800,
+    "h": 1219,
+    "color": "#3c501c",
+    "pages": 272
+  },
+  "the-future-and-its-enemies-virginia-postrel": {
+    "w": 800,
+    "h": 1236,
+    "color": "#92381b",
+    "pages": 288
+  },
+  "the-hero-with-a-thousand-faces-joseph-campbell": {
+    "w": 800,
+    "h": 1283,
+    "color": "#575151",
+    "pages": 416
+  },
+  "the-master-and-his-emissary-iain-mcgilchrist": {
+    "w": 800,
+    "h": 1149,
+    "color": "#77c695",
+    "pages": 608
+  },
+  "the-meaning-of-human-existence-edward-o-wilson": {
+    "w": 800,
+    "h": 1208,
+    "color": "#7c6956",
+    "pages": 207
+  },
+  "the-omnivore-s-dilemma-michael-pollan": {
+    "w": 782,
+    "h": 1200,
+    "color": "#151510",
+    "pages": 450
+  },
+  "the-path-to-power-robert-a-caro": {
+    "w": 480,
+    "h": 720,
+    "color": "#201012",
+    "pages": 882
+  },
+  "the-power-of-myth-joseph-campbell": {
+    "w": 800,
+    "h": 1233,
+    "color": "#1e1c12",
+    "pages": 293
+  },
+  "the-quest-for-community-robert-nisbet": {
+    "w": 800,
+    "h": 1114,
+    "color": "#4c643e",
+    "pages": 303
+  },
+  "the-robots-of-dawn-isaac-asimov": {
+    "w": 800,
+    "h": 1200,
+    "color": "#06c7bb",
+    "pages": 446
+  },
+  "the-rook-daniel-o-malley": {
+    "w": 800,
+    "h": 1213,
+    "color": "#b11c24",
+    "pages": 496
+  },
+  "the-sacred-and-the-profane-mircea-eliade": {
+    "w": 800,
+    "h": 1200,
+    "color": "#d2c2a9",
+    "pages": 256
+  },
+  "the-shock-doctrine-naomi-klein": {
+    "w": 800,
+    "h": 1198,
+    "color": "#989797",
+    "pages": 677
+  },
+  "the-spell-of-the-sensuous-david-abram": {
+    "w": 800,
+    "h": 1233,
+    "color": "#707c85",
+    "pages": 326
+  },
+  "the-technological-society-jacques-ellul": {
+    "w": 800,
+    "h": 1233,
+    "color": "#847b77",
+    "pages": 449
+  },
+  "the-tender-carnivore-and-the-sacred-game-paul-shepard": {
+    "w": 319,
+    "h": 475,
+    "color": "#71313d",
+    "pages": 302
+  },
+  "the-unsettling-of-america-wendell-berry": {
+    "w": 800,
+    "h": 1200,
+    "color": "#0c2f1d",
+    "pages": 228
+  },
+  "the-weirdest-people-in-the-world-joseph-henrich": {
+    "w": 800,
+    "h": 1228,
+    "color": "#ef844f",
+    "pages": 704
+  },
+  "the-windup-girl-paolo-bacigalupi": {
+    "w": 800,
+    "h": 1199,
+    "color": "#9a958b",
+    "pages": 409
+  },
+  "to-arrive-where-we-started-ian-marcus-corbin": {
+    "w": 800,
+    "h": 1236,
+    "color": "#ab8579"
+  },
+  "tools-for-conviviality-ivan-illich": {
+    "w": 800,
+    "h": 1240,
+    "color": "#3f4140",
+    "pages": 132
+  },
+  "tribe-sebastian-junger": {
+    "w": 800,
+    "h": 1199,
+    "color": "#142d3e",
+    "pages": 189
+  },
+  "waking-up-sam-harris": {
+    "w": 800,
+    "h": 1219,
+    "color": "#a8d1ee",
+    "pages": 256
+  },
+  "why-liberalism-failed-patrick-deneen": {
+    "w": 800,
+    "h": 1200,
+    "color": "#4e4a36",
+    "pages": 256
+  },
+  "wisdom-of-the-mythtellers-sean-kane": {
+    "w": 305,
+    "h": 500,
+    "color": "#815e51",
+    "pages": 280
+  },
+  "writing-down-the-bones-natalie-goldberg": {
+    "w": 800,
+    "h": 1236,
+    "color": "#f1ede9",
+    "pages": 256
+  }
+}

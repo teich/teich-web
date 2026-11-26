@@ -1,0 +1,771 @@
+/* Reading list. Layout and type live here; the books themselves are drawn by
+   gpu/engine.ts on the canvas in .stage, which floats over the page. Without
+   WebGPU the same slots hold plain cover images. */
+
+@property --reveal {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+html:has(.reading) {
+  scrollbar-gutter: stable;
+  background: #f3eee3;
+}
+
+html:has(.reading[data-detail]) {
+  overflow: hidden;
+}
+
+.reading {
+  --paper: oklch(95.2% 0.016 84);
+  --ink: oklch(21% 0.012 62);
+  --ink-soft: oklch(40% 0.014 62);
+  --ink-faint: oklch(57% 0.014 70);
+  --rule: color-mix(in oklch, var(--ink) 13%, transparent);
+  --accent: oklch(37% 0.068 163);
+  --display: var(--font-reading-display), "Cormorant Garamond", Georgia, serif;
+  --body: var(--font-reading-body), Lora, Georgia, serif;
+  --gutter: max(1.25rem, calc((100vw - 84rem) / 2));
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+
+  /* Paper tooth. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .26 0 0 0 0 .2 0 0 0 0 .12 0 0 0 .55 -.17'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  & a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  & button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  & :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 5px;
+    border-radius: 2px;
+  }
+}
+
+.reading .page {
+  position: relative;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+}
+
+.reading[data-detail] .page {
+  opacity: 0;
+}
+
+.reading .page[data-pick] {
+  cursor: pointer;
+}
+
+.reading .stage {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: clip;
+  pointer-events: none;
+
+  & canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    will-change: transform;
+  }
+}
+
+.reading[data-gpu="off"] .stage {
+  display: none;
+}
+
+/* ── Masthead and hero ─────────────────────────────────────────────────── */
+
+.reading .masthead {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  padding: 1.75rem var(--gutter);
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+
+  & a {
+    transition: color 0.2s;
+  }
+
+  & a:hover {
+    color: var(--ink);
+  }
+}
+
+.reading .hero {
+  display: grid;
+  align-content: end;
+  gap: clamp(1.5rem, 3.5vh, 3rem);
+  min-height: 100svh;
+  padding: 6rem var(--gutter) clamp(2.5rem, 7vh, 5.5rem);
+
+  & h1 {
+    margin: 0 0 0 -0.045em;
+    font-family: var(--display);
+    font-size: clamp(5.75rem, 23.5vw, 25rem);
+    font-style: italic;
+    font-weight: 300;
+    line-height: 0.76;
+    letter-spacing: -0.04em;
+  }
+
+  & .lede {
+    max-width: 27ch;
+    margin: 0;
+    font-size: clamp(1.05rem, 1.45vw, 1.4rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    text-wrap: balance;
+  }
+}
+
+.reading[data-gpu="off"] .hero {
+  min-height: 68svh;
+}
+
+/* ── Contents ──────────────────────────────────────────────────────────── */
+
+.reading .contents {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: 2.5rem clamp(2rem, 5vw, 5rem);
+  align-items: start;
+  padding: clamp(3rem, 9vh, 6rem) var(--gutter) clamp(4rem, 12vh, 8rem);
+  border-top: 1px solid var(--rule);
+}
+
+.reading .filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.4rem;
+  font-size: 0.95rem;
+
+  & button {
+    padding: 0.2rem 0;
+    color: var(--ink-faint);
+    border-bottom: 1px solid transparent;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+
+  & button:hover {
+    color: var(--ink);
+  }
+
+  & button[aria-pressed="true"] {
+    color: var(--ink);
+    border-bottom-color: currentColor;
+  }
+
+  & span {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+}
+
+.reading .toc {
+  max-width: 44rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  & a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding: 0.42rem 0;
+    font-family: var(--display);
+    font-size: clamp(1.45rem, 2.3vw, 2.05rem);
+    font-weight: 500;
+    line-height: 1.15;
+  }
+
+  & .numeral {
+    flex: 0 0 2.4ch;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink-faint);
+  }
+
+  & .name {
+    transition: color 0.2s;
+  }
+
+  & a:hover .name {
+    color: var(--accent);
+  }
+
+  & .leader {
+    flex: 1;
+    min-width: 1.5rem;
+    translate: 0 -0.28em;
+    border-bottom: 1px dotted color-mix(in oklch, var(--ink) 38%, transparent);
+  }
+
+  & .count {
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--ink-soft);
+  }
+}
+
+/* ── Shelves ───────────────────────────────────────────────────────────── */
+
+.reading .shelf {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: 2.5rem clamp(2rem, 5vw, 5rem);
+  padding: clamp(3.5rem, 10vh, 7rem) var(--gutter) clamp(4rem, 12vh, 8.5rem);
+  border-top: 1px solid var(--rule);
+  scroll-margin-top: 0;
+}
+
+.reading .shelf-head {
+  position: sticky;
+  top: 2.75rem;
+  align-self: start;
+
+  & .numeral {
+    display: block;
+    font-family: var(--display);
+    font-size: 1.6rem;
+    font-style: italic;
+    color: var(--ink-faint);
+  }
+
+  & h2 {
+    margin: 0.35rem 0 0.9rem;
+    font-family: var(--display);
+    font-size: clamp(2.1rem, 2.9vw, 2.9rem);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.012em;
+    text-wrap: balance;
+  }
+
+  & p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ink-faint);
+  }
+}
+
+.reading .books {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(9.25rem, 40%), 1fr));
+  column-gap: clamp(1.25rem, 3.2vw, 3.25rem);
+  row-gap: clamp(3rem, 7vh, 4.75rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Covers stand on a shared baseline; captions hang from it. */
+.reading .book {
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  row-gap: 1.4rem;
+  scroll-margin-top: 28vh;
+}
+
+.reading .cover {
+  position: relative;
+  display: block;
+  align-self: end;
+  width: 100%;
+  aspect-ratio: var(--aspect);
+
+  &:focus-visible {
+    outline-offset: 10px;
+  }
+
+  & img,
+  & .cloth {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow:
+      0 1px 1px rgb(48 34 16 / 0.2),
+      0.35rem 0.5rem 0.55rem rgb(48 34 16 / 0.22),
+      0.9rem 1.3rem 1.9rem rgb(48 34 16 / 0.16);
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.45s;
+  }
+
+  &:hover img,
+  &:hover .cloth {
+    transform: perspective(60rem) translateY(-0.4rem) rotateX(4deg) rotateY(-6deg);
+    box-shadow:
+      0 1px 1px rgb(48 34 16 / 0.2),
+      0.7rem 1rem 1rem rgb(48 34 16 / 0.2),
+      1.6rem 2.2rem 3rem rgb(48 34 16 / 0.18);
+  }
+}
+
+/* Without WebGPU, read books get the same ribbon marker in CSS. */
+.reading:not([data-gpu="on"]) .book[data-status="read"] .cover::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 60%;
+  width: 7%;
+  height: 0.8rem;
+  background: #7d2a30;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 62%, 0 100%);
+}
+
+.reading .cloth {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16% 12% 12%;
+  text-align: center;
+  background: var(--cloth);
+  color: #f6efdf;
+  font-family: var(--display);
+  outline: 1px solid rgb(246 239 223 / 0.45);
+  outline-offset: -0.6rem;
+
+  & span {
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  & small {
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+}
+
+.reading .caption {
+  min-width: 0;
+
+  & h3 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 1.36rem;
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+  }
+
+  & p {
+    margin: 0;
+  }
+
+  & .author {
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: var(--ink-soft);
+  }
+
+  /* Read: a filled mark. To read: an open one, in green. */
+  & .status {
+    margin-top: 0.3rem;
+    font-size: 0.82rem;
+    font-style: italic;
+    color: var(--ink-faint);
+
+    &::before {
+      content: "";
+      display: inline-block;
+      box-sizing: border-box;
+      width: 0.5em;
+      height: 0.5em;
+      margin-right: 0.5em;
+      translate: 0 -0.08em;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      background: currentColor;
+    }
+  }
+
+  & .status[data-status="to-read"] {
+    color: var(--accent);
+
+    &::before {
+      background: none;
+    }
+  }
+
+  & .note {
+    display: -webkit-box;
+    margin-top: 0.7rem;
+    overflow: hidden;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+}
+
+/* Captions arrive with their books. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reading[data-gpu="on"] .caption {
+      animation: caption-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 110%;
+    }
+
+    .reading .shelf-head {
+      animation: head-in linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 90%;
+    }
+  }
+}
+
+@keyframes caption-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes head-in {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+}
+
+/* ── Colophon ──────────────────────────────────────────────────────────── */
+
+.reading .colophon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  padding: 3.5rem var(--gutter) 5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+  color: var(--ink-faint);
+
+  & p {
+    max-width: 44ch;
+    margin: 0;
+    font-style: italic;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  & nav {
+    display: flex;
+    gap: 1.6rem;
+  }
+
+  & a:hover {
+    color: var(--ink);
+  }
+}
+
+/* ── A book held up close ──────────────────────────────────────────────── */
+
+.reading .scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.reading[data-detail] .scrim {
+  pointer-events: auto;
+}
+
+.reading .detail {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  column-gap: clamp(1rem, 4vw, 5rem);
+  padding: 4.5rem var(--gutter) 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.reading .detail-close {
+  position: fixed;
+  top: 1.75rem;
+  right: var(--gutter);
+  z-index: 1;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+
+  &:hover {
+    color: var(--ink);
+  }
+}
+
+.reading .detail-book {
+  display: grid;
+  place-items: center;
+  height: min(74svh, 48rem);
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  & img,
+  & .cloth {
+    width: auto;
+    max-width: 78%;
+    height: auto;
+    max-height: 88%;
+    border-radius: 3px;
+    box-shadow:
+      0.6rem 0.9rem 1rem rgb(48 34 16 / 0.2),
+      2rem 3rem 4rem rgb(48 34 16 / 0.2);
+  }
+
+  & .cloth {
+    width: 18rem;
+    aspect-ratio: 2 / 3;
+  }
+}
+
+.reading .detail-text {
+  max-width: 32rem;
+  padding-block: 1rem;
+
+  & > * {
+    animation: detail-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms + 180ms);
+  }
+
+  & > :nth-child(2) {
+    --i: 1;
+  }
+
+  & > :nth-child(3) {
+    --i: 2;
+  }
+
+  & > :nth-child(4) {
+    --i: 3;
+  }
+
+  & > :nth-child(5) {
+    --i: 4;
+  }
+
+  & > :nth-child(n + 6) {
+    --i: 5;
+  }
+
+  & h2 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(2.6rem, 4.9vw, 4.9rem);
+    font-weight: 400;
+    line-height: 0.96;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+
+  & p {
+    margin: 0;
+  }
+}
+
+.reading .detail-subtitle {
+  margin-top: 0.8rem !important;
+  font-family: var(--display);
+  font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+  line-height: 1.2;
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+
+.reading .detail-author {
+  margin-top: 1.1rem !important;
+  font-family: var(--display);
+  font-size: clamp(1.35rem, 1.9vw, 1.7rem);
+  font-style: italic;
+}
+
+.reading .detail-note {
+  margin-top: 2rem !important;
+  font-size: clamp(1.02rem, 1.2vw, 1.14rem);
+  line-height: 1.72;
+  hanging-punctuation: first;
+  text-wrap: pretty;
+}
+
+.reading .detail-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0;
+  margin-top: 2rem !important;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+
+  & span + span::before {
+    content: "·";
+    margin-inline: 0.6em;
+    color: var(--ink-faint);
+  }
+
+  & [data-status] {
+    font-style: italic;
+  }
+
+  & [data-status="to-read"] {
+    color: var(--accent);
+  }
+}
+
+.reading .detail-links {
+  display: grid;
+  gap: 0.45rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+
+  & a {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, var(--ink) 30%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    transition:
+      color 0.2s,
+      text-decoration-color 0.2s;
+  }
+
+  & a:hover {
+    color: var(--accent);
+    text-decoration-color: currentColor;
+  }
+}
+
+.reading .detail-pager {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-top: 1.25rem;
+  font-family: var(--display);
+  font-size: 1.15rem;
+  font-style: italic;
+  color: var(--ink-faint);
+
+  & button {
+    max-width: 46%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+
+  & button:hover {
+    color: var(--ink);
+  }
+
+  & span {
+    font-style: normal;
+  }
+}
+
+@keyframes detail-in {
+  from {
+    opacity: 0;
+    translate: 0 1.1rem;
+  }
+}
+
+/* ── Narrow screens ────────────────────────────────────────────────────── */
+
+@media (width < 54rem) {
+  .reading .contents,
+  .reading .shelf {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .reading .shelf-head {
+    position: static;
+  }
+
+  .reading .books {
+    grid-template-columns: repeat(auto-fill, minmax(min(7.25rem, 40%), 1fr));
+  }
+
+  .reading .caption h3 {
+    font-size: 1.2rem;
+  }
+
+  .reading .detail {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    align-items: start;
+    padding-top: 3.5rem;
+  }
+
+  .reading .detail-book {
+    height: 46svh;
+  }
+
+  .reading .detail-text {
+    max-width: 36rem;
+    justify-self: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reading .detail-text > *,
+  .reading .cover img,
+  .reading .page {
+    animation: none;
+    transition: none;
+  }
+}
