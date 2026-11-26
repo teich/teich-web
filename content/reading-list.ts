@@ -17,6 +17,8 @@ export type Book = {
   /** Date finished, as YYYY, YYYY-MM, or YYYY-MM-DD. */
   dateRead?: string;
   note?: string;
+  /** Out of 5. Books rated below MIN_DISPLAY_RATING stay in the data but are not shown. */
+  rating?: 1 | 2 | 3 | 4 | 5;
   aliases?: string[];
   mentionedIn?: {
     title: string;
@@ -33,6 +35,13 @@ export const shelfOrder: ReadingShelf[] = [
   "Work, Judgment & Organizations",
   "Speculative Fiction",
 ];
+
+/** The list shows books worth recommending; unrated books are assumed to qualify. */
+export const MIN_DISPLAY_RATING = 4;
+
+export function isDisplayed(book: Pick<Book, "rating">) {
+  return book.rating === undefined || book.rating >= MIN_DISPLAY_RATING;
+}
 
 export function slugForBook(book: Pick<Book, "title" | "author">) {
   return `${book.title}-${book.author}`
@@ -383,8 +392,11 @@ export const books: Book[] = [
   {
     title: "Hospicing Modernity",
     author: "Vanessa Machado de Oliveira",
-    status: "to-read",
+    status: "read",
     shelf: "Modern Systems & Their Discontents",
+    dateRead: "2026-11",
+    rating: 3,
+    note: "Polemical and fatalist. It was so sure of itself that it left no room for being wrong, or for a conversation, and felt intellectually closed.",
     aliases: [
       "Hospicing Modernity: Facing Humanity's Wrongs and the Implications for Social Activism",
     ],
@@ -614,8 +626,11 @@ export const books: Book[] = [
   },
 ];
 
+export const displayedBooks = books.filter(isDisplayed);
+
+// Only displayed books, so essays never link to an anchor that isn't on the page.
 export const readingByTitle = new Map<string, Book>(
-  books.flatMap((book) => [
+  displayedBooks.flatMap((book) => [
     [book.title, book] as const,
     ...(book.aliases ?? []).map((alias) => [alias, book] as const),
   ]),

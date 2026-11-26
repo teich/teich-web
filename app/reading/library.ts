@@ -1,7 +1,7 @@
 import { getImageProps } from "next/image";
 import manifest from "@/content/covers.json";
 import {
-  books,
+  displayedBooks,
   shelfOrder,
   slugForBook,
   type Book,
@@ -80,7 +80,7 @@ export const shelves: Shelf[] = shelfOrder.map((name, n) => ({
   name,
   id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
   numeral: numerals[n] ?? String(n + 1),
-  books: books
+  books: displayedBooks
     .filter((book) => book.shelf === name)
     .sort((a, b) =>
       a.status === b.status
