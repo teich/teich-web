@@ -167,6 +167,11 @@ html:has(.reading[data-detail]) {
   border-top: 1px solid var(--rule);
 }
 
+.reading .controls {
+  display: grid;
+  gap: 1.25rem;
+}
+
 .reading .filter {
   display: flex;
   flex-wrap: wrap;
@@ -195,6 +200,115 @@ html:has(.reading[data-detail]) {
     font-variant-numeric: tabular-nums;
     font-size: 0.8em;
     opacity: 0.7;
+  }
+}
+
+.reading .controls-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.35rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.82rem;
+}
+
+.reading .toggle-group {
+  display: inline-flex;
+  gap: 0.7rem;
+
+  & button {
+    padding: 0.15rem 0;
+    color: var(--ink-faint);
+    border-bottom: 1px solid transparent;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+
+  & button:hover {
+    color: var(--ink);
+  }
+
+  & button[aria-pressed="true"] {
+    color: var(--ink);
+    border-bottom-color: currentColor;
+  }
+}
+
+.reading .search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--rule);
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-bottom-color: var(--ink);
+  }
+
+  & input {
+    width: 100%;
+    padding: 0.35rem 1.6rem 0.35rem 0;
+    font: inherit;
+    font-size: 0.86rem;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    outline: none;
+  }
+
+  & input::placeholder {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+
+  & input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  & kbd {
+    position: absolute;
+    right: 0;
+    font-family: inherit;
+    font-size: 0.72rem;
+    line-height: 1;
+    padding: 0.18rem 0.36rem;
+    color: var(--ink-faint);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    pointer-events: none;
+  }
+
+  & .search-clear {
+    position: absolute;
+    right: 0;
+    padding: 0.1rem 0.25rem;
+    font-size: 1.05rem;
+    line-height: 1;
+    color: var(--ink-faint);
+  }
+
+  & .search-clear:hover {
+    color: var(--ink);
+  }
+}
+
+.reading .empty-state {
+  margin: 0;
+  padding: 0.5rem 0;
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--ink-soft);
+
+  & button {
+    font-style: normal;
+    font-size: 0.95rem;
+    font-family: var(--body);
+    margin-left: 0.5rem;
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    color: var(--accent);
   }
 }
 
@@ -341,7 +455,7 @@ html:has(.reading[data-detail]) {
 }
 
 /* Without WebGPU, read books get the same ribbon marker in CSS. */
-.reading:not([data-gpu="on"]) .book[data-status="read"] .cover::after {
+.reading[data-gpu="off"][data-view="covers"] .book[data-status="read"] .cover::after {
   content: "";
   position: absolute;
   top: 100%;
@@ -350,6 +464,113 @@ html:has(.reading[data-detail]) {
   height: 0.8rem;
   background: #7d2a30;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 62%, 0 100%);
+}
+
+/* ── Spine-out bookshelf view ──────────────────────────────────────────── */
+
+.reading[data-view="spines"] {
+  --spine-unit: clamp(7.4rem, 9.4vw, 9.4rem);
+}
+
+.reading[data-view="spines"] .books {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  column-gap: 3px;
+  row-gap: 3.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid color-mix(in oklch, var(--ink) 20%, transparent);
+}
+
+.reading[data-view="spines"] .book {
+  display: block;
+}
+
+.reading[data-view="spines"] .cover {
+  width: max(1.45rem, calc(var(--spine-unit) * var(--thick)));
+  height: calc(var(--spine-unit) / var(--aspect));
+  aspect-ratio: auto;
+}
+
+.reading[data-view="spines"] .caption {
+  display: none;
+}
+
+.reading .spine-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem 0.15rem;
+  writing-mode: vertical-rl;
+  background: var(--cloth);
+  color: var(--spine-ink);
+  border-radius: 2px;
+  box-shadow:
+    inset 2px 0 3px rgb(255 255 255 / 0.12),
+    inset -2px 0 4px rgb(0 0 0 / 0.22),
+    2px 4px 10px rgb(48 34 16 / 0.22);
+  font-family: var(--display);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  & span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  & small {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+}
+
+.reading[data-view="spines"] .cover:hover .spine-fallback {
+  transform: translateY(-0.55rem);
+}
+
+.reading .spine-readout {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 4;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  max-width: min(92vw, 42rem);
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--paper) 92%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 28px rgb(48 34 16 / 0.12);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  & strong {
+    font-family: var(--display);
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  & span {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+
+  & em {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+  }
 }
 
 .reading .cloth {
@@ -542,10 +763,17 @@ html:has(.reading[data-detail]) {
   }
 }
 
+.reading .detail-stage {
+  display: grid;
+  justify-items: center;
+  gap: 0.65rem;
+}
+
 .reading .detail-book {
   display: grid;
   place-items: center;
-  height: min(74svh, 48rem);
+  width: 100%;
+  height: min(72svh, 46rem);
   cursor: grab;
   touch-action: pan-y;
   user-select: none;
@@ -569,6 +797,22 @@ html:has(.reading[data-detail]) {
   & .cloth {
     width: 18rem;
     aspect-ratio: 2 / 3;
+  }
+}
+
+.reading .detail-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ink-faint);
+  letter-spacing: 0.01em;
+  opacity: 0.82;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+  user-select: none;
+
+  &[data-faded] {
+    opacity: 0;
   }
 }
 
@@ -673,7 +917,8 @@ html:has(.reading[data-detail]) {
   list-style: none;
   font-size: 0.95rem;
 
-  & a {
+  & a,
+  & .detail-copy {
     text-decoration: underline;
     text-decoration-color: color-mix(in oklch, var(--ink) 30%, transparent);
     text-decoration-thickness: 1px;
@@ -683,7 +928,8 @@ html:has(.reading[data-detail]) {
       text-decoration-color 0.2s;
   }
 
-  & a:hover {
+  & a:hover,
+  & .detail-copy:hover {
     color: var(--accent);
     text-decoration-color: currentColor;
   }
@@ -752,7 +998,20 @@ html:has(.reading[data-detail]) {
   }
 
   .reading .detail-book {
-    height: 46svh;
+    height: 44svh;
+  }
+
+  .reading[data-view="spines"] {
+    --spine-unit: clamp(6.2rem, 16vw, 7.6rem);
+  }
+
+  .reading .spine-readout {
+    bottom: 1rem;
+    font-size: 0.85rem;
+
+    & em {
+      display: none;
+    }
   }
 
   .reading .detail-text {

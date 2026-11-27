@@ -11,11 +11,15 @@
 // under the viewport each frame, so books never lag behind their captions.
 
 import { BOOK_WGSL, MIP_WGSL, SHADOW_WGSL } from "./shaders";
-import { drawCloth, drawSpine } from "./typeset";
+import { drawBackCover, drawCloth, drawSpine } from "./typeset";
 
 export type EngineBook = {
   title: string;
   author: string;
+  subtitle?: string;
+  shelf: string;
+  statusLine: string;
+  note?: string;
   /** width / height */
   aspect: number;
   /** thickness / width */
@@ -28,19 +32,23 @@ export type EngineBook = {
   bigUrl?: string;
 };
 
-/** Where a book rests: centre in page pixels, and its cover width. */
-export type Slot = { x: number; y: number; w: number };
+/** Where a book rests: centre in page pixels, and its cover width (or spine box). */
+export type Slot = { x: number; y: number; w: number; h?: number };
 /** Where the close-up book is held: centre and size in viewport pixels. */
 export type Box = { x: number; y: number; w: number; h: number };
+export type ViewMode = "covers" | "spines";
 
 export type Engine = {
   setSlots(slots: (Slot | null)[]): void;
+  setViewMode(mode: ViewMode): void;
   setHover(index: number | null, tx?: number, ty?: number): void;
+  setPointer(clientX: number | null, clientY: number | null): void;
   /** The drifting book under a point in the viewport, if any. */
   pick(clientX: number, clientY: number): number | null;
   setSelected(index: number | null): void;
   setBox(box: Box): void;
   drag(dx: number, dy: number): void;
+  flip(): void;
   wake(): void;
   destroy(): void;
 };
@@ -50,6 +58,8 @@ type Options = {
   stage: HTMLElement;
   books: EngineBook[];
   fontFamily: string;
+  bodyFontFamily?: string;
+  crestUrl?: string;
   onLost?: () => void;
 };
 
@@ -60,6 +70,9 @@ const COVER_MIPS = 8;
 const SPINE_W = 64;
 const SPINE_H = 512;
 const SPINE_MIPS = 6;
+const BACK_W = 512;
+const BACK_H = 768;
+const BACK_MIPS = 7;
 const STRIDE = 32;
 const FLOW = 1 / 170;
 /** How far a book's landing has to progress before it leaves the stream. */
@@ -327,6 +340,16 @@ export async function createEngine(options: Options): Promise<Engine | null> {
   let closeupFor = -1;
   let closeupToken = 0;
 
+  const backCover = device.createTexture({
+    size: [BACK_W, BACK_H],
+    format: "rgba8unorm-srgb",
+    mipLevelCount: BACK_MIPS,
+    usage: textureUsage,
+  });
+  let backFor = -1;
+  let crestImage: HTMLImageElement | null = null;
+  const bodyFont = options.bodyFontFamily || "Georgia, serif";
+
   const sampler = device.createSampler({
     magFilter: "linear",
     minFilter: "linear",
@@ -343,6 +366,7 @@ export async function createEngine(options: Options): Promise<Engine | null> {
       { binding: 3, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: "2d-array" } },
       { binding: 4, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: "2d-array" } },
       { binding: 5, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: "2d" } },
+      { binding: 6, visibility: GPUShaderStage.FRAGMENT, texture: { viewDimension: "2d" } },
     ],
   });
   const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
@@ -356,6 +380,7 @@ export async function createEngine(options: Options): Promise<Engine | null> {
         { binding: 3, resource: covers.createView({ dimension: "2d-array" }) },
         { binding: 4, resource: spines.createView({ dimension: "2d-array" }) },
         { binding: 5, resource: closeup.createView() },
+        { binding: 6, resource: backCover.createView() },
       ],
     });
   let bindGroup = makeBindGroup();
@@ -466,10 +491,12 @@ export async function createEngine(options: Options): Promise<Engine | null> {
     uHold: null as number | null,
     userYaw: 0,
     yawVelocity: 0,
+    flipGoal: null as number | null,
     pitch: 0,
     cover: 0,
     coverReady: false,
     sharp: 0,
+    back: 0,
     tint: def.color.map(toLinear) as [number, number, number],
   }));
 
@@ -483,9 +510,19 @@ export async function createEngine(options: Options): Promise<Engine | null> {
 
   let selected = -1;
   let dim = 0;
+  let viewMode: ViewMode = "covers";
+  let spineMix = 0;
   let box: Box = { x: 0, y: 0, w: 300, h: 400 };
   let dragging = 0;
   let lastDragTime = 0;
+  let ptrTargetX = 0;
+  let ptrTargetY = 0;
+  let ptrOn = 0;
+  let ptrX = 0;
+  let ptrY = 0;
+  let ptrActive = 0;
+  let softX = -0.36;
+  let softY = 0.52;
 
   // ── Viewport ─────────────────────────────────────────────────────────────
   let dpr = 1;
@@ -659,6 +696,44 @@ export async function createEngine(options: Options): Promise<Engine | null> {
 
   const spineCanvas = document.createElement("canvas");
   const clothCanvas = document.createElement("canvas");
+  const backCanvas = document.createElement("canvas");
+
+  const renderBackCover = (index: number) => {
+    if (destroyed) return;
+    const surface = drawBackCover(
+      state[index].def,
+      BACK_W,
+      BACK_H,
+      options.fontFamily,
+      bodyFont,
+      crestImage,
+      backCanvas,
+    );
+    device.queue.copyExternalImageToTexture(
+      { source: surface },
+      { texture: backCover, origin: [0, 0, 0], mipLevel: 0 },
+      [BACK_W, BACK_H],
+    );
+    generateMips(backCover, 0, BACK_MIPS);
+    backFor = index;
+    for (let i = 0; i < count; i++) {
+      if (i !== index) state[i].back = 0;
+    }
+    wake();
+  };
+
+  const loadCrest = async () => {
+    if (!options.crestUrl) return;
+    try {
+      const img = await loadImage(options.crestUrl);
+      if (destroyed) return;
+      crestImage = img;
+      if (selected >= 0) renderBackCover(selected);
+    } catch {
+      // Back cover falls back to its diamond ornament.
+    }
+  };
+  void loadCrest();
   let uploadsThisTick = 0;
   let resetScheduled = false;
 
@@ -791,13 +866,49 @@ export async function createEngine(options: Options): Promise<Engine | null> {
     dim = ease(dim, selected >= 0 ? 1 : 0, 7, dt);
     if (Math.abs(dim - (selected >= 0 ? 1 : 0)) > 0.002) active = true;
 
-    // Close-up handling: per-book free spin with framerate-independent momentum.
+    const spineTarget = viewMode === "spines" ? 1 : 0;
+    spineMix = still ? spineTarget : ease(spineMix, spineTarget, 6.5, dt);
+    if (Math.abs(spineMix - spineTarget) > 0.001) active = true;
+    const spineE = smooth(spineMix);
+
+    // Smooth pointer state for hero stream wake and softbox lamp sheen.
+    ptrActive = ease(ptrActive, ptrOn, 6, dt);
+    ptrX = ease(ptrX, ptrTargetX, 12, dt);
+    ptrY = ease(ptrY, ptrTargetY, 12, dt);
+    if (Math.abs(ptrActive - ptrOn) > 0.003) active = true;
+    const ptrNdcX = clamp(ptrX / Math.max(1, vw * 0.5), -1, 1);
+    const ptrNdcY = clamp(ptrY / Math.max(1, vh * 0.5), -1, 1);
+    const lampGain = mix(0.14, 0.3, dim) * ptrActive;
+    softX = ease(softX, -0.36 + ptrNdcX * lampGain, 7, dt);
+    softY = ease(softY, 0.52 + ptrNdcY * lampGain, 7, dt);
+    const softLen = Math.hypot(softX, softY, 0.775) || 1;
+    softbox[0] = softX / softLen;
+    softbox[1] = softY / softLen;
+    softbox[2] = 0.775 / softLen;
+    if (
+      Math.abs(softX - (-0.36 + ptrNdcX * lampGain)) +
+        Math.abs(softY - (0.52 + ptrNdcY * lampGain)) >
+      0.002
+    ) {
+      active = true;
+    }
+
+    // Close-up handling: per-book free spin, momentum, and click-to-flip.
     if (selected >= 0) {
       const sb = state[selected];
       if (!dragging) {
-        sb.userYaw += sb.yawVelocity * dt;
-        sb.yawVelocity *= Math.exp(-3.2 * dt);
-        sb.pitch = ease(sb.pitch, 0, 2.5, dt);
+        if (sb.flipGoal !== null) {
+          sb.userYaw = ease(sb.userYaw, sb.flipGoal, 6.8, dt);
+          sb.pitch = ease(sb.pitch, 0, 6.8, dt);
+          if (Math.abs(sb.userYaw - sb.flipGoal) < 0.002) {
+            sb.userYaw = sb.flipGoal;
+            sb.flipGoal = null;
+          }
+        } else {
+          sb.userYaw += sb.yawVelocity * dt;
+          sb.yawVelocity *= Math.exp(-3.2 * dt);
+          sb.pitch = ease(sb.pitch, 0, 2.5, dt);
+        }
       }
       if (!still) active = true;
     }
@@ -806,6 +917,7 @@ export async function createEngine(options: Options): Promise<Engine | null> {
     const band = clamp(vw * 0.12, 48, 176);
     const airWidth = clamp(vw * 0.05, 46, 76);
     const loft = Math.min(D * 0.15, vw * 0.22);
+    const wakeRadius = clamp(vw * 0.16, 130, 230);
     const nearEnd = smoothstep(maxScroll - vh * 0.45, maxScroll - 2, scroll);
     const streamInView = scroll < heroH * 1.35 + 240;
     const canvasMinY = centerY - canvasTop - canvasH;
@@ -819,18 +931,26 @@ export async function createEngine(options: Options): Promise<Engine | null> {
       const o = i * STRIDE;
       const isHeld = i === selected;
 
-      // Where it rests.
+      // Where it rests. In spines mode, the slot height determines the book's
+      // physical height so real aspect & thickness stay exact.
       if (b.slot) {
+        const slotW =
+          viewMode === "spines" && b.slot.h ? b.slot.h * b.def.aspect : b.slot.w;
         if (!b.placed) {
           b.x = b.slot.x;
           b.y = b.slot.y;
-          b.w = b.slot.w;
+          b.w = slotW;
           b.placed = true;
         } else {
           b.x = ease(b.x, b.slot.x, 9, dt);
           b.y = ease(b.y, b.slot.y, 9, dt);
-          b.w = ease(b.w, b.slot.w, 9, dt);
-          if (Math.abs(b.x - b.slot.x) + Math.abs(b.y - b.slot.y) > 0.3) active = true;
+          b.w = ease(b.w, slotW, 9, dt);
+          if (
+            Math.abs(b.x - b.slot.x) + Math.abs(b.y - b.slot.y) + Math.abs(b.w - slotW) >
+            0.3
+          ) {
+            active = true;
+          }
         }
       }
       const presentTo = b.slot ? 1 : 0;
@@ -861,6 +981,7 @@ export async function createEngine(options: Options): Promise<Engine | null> {
         }
         b.userYaw = 0;
         b.yawVelocity = 0;
+        b.flipGoal = null;
         b.pitch = 0;
       }
 
@@ -868,19 +989,35 @@ export async function createEngine(options: Options): Promise<Engine | null> {
       b.cover = ease(b.cover, coverTo, 4, dt);
       const sharpTo = isHeld && closeupFor === i ? 1 : 0;
       b.sharp = ease(b.sharp, sharpTo, 6, dt);
-      if (Math.abs(b.cover - coverTo) + Math.abs(b.sharp - sharpTo) > 0.004) active = true;
+      const backTo = b.held > 0.01 && backFor === i ? 1 : 0;
+      b.back = ease(b.back, backTo, 7, dt);
+      if (
+        Math.abs(b.cover - coverTo) + Math.abs(b.sharp - sharpTo) + Math.abs(b.back - backTo) >
+        0.004
+      ) {
+        active = true;
+      }
 
       const w0 = b.w;
       const h0 = w0 / b.def.aspect;
       const t0 = w0 * b.def.thick;
 
-      // On the shelf: cover flush with the page, the block sunk beneath it.
-      const lift = b.hover * 30;
+      // On the shelf: in covers mode the front board sits flush with the paper;
+      // in spines mode the book turns 90° so its spine sits flush and tips out
+      // cleanly in the Y-Z plane on hover without ever clipping neighbours.
+      const coverLift = b.hover * 30;
+      const spineLift = b.hover * 58;
+      const lift = mix(coverLift, spineLift, spineE);
       let px = b.x - vw / 2;
-      let py = centerY - b.y;
-      let pz = -t0 / 2 + lift;
-      let scale = 1 + b.hover * 0.015;
-      let rotation = euler(lean * 1.4 - b.ty * b.hover * 0.2, b.tx * b.hover * 0.3, 0);
+      let py = centerY - b.y + spineE * b.hover * 10;
+      let pz = mix(-t0 / 2, -w0 / 2, spineE) + lift;
+      let scale = 1 + b.hover * mix(0.015, 0.02, spineE);
+      const coverRot = euler(lean * 1.4 - b.ty * b.hover * 0.2, b.tx * b.hover * 0.3, 0);
+      const spineRot = multiply(
+        euler(lean * 0.7 + b.hover * 0.14, 0, 0),
+        euler(0, Math.PI / 2, 0),
+      );
+      let rotation = spineE > 0.0005 ? nlerp(coverRot, spineRot, spineE) : coverRot;
       let alpha = 1;
 
       // Not on its shelf yet.
@@ -900,10 +1037,31 @@ export async function createEngine(options: Options): Promise<Engine | null> {
             26 + (0.2 + 0.8 * b.r[1]) * loft * (0.25 + 0.75 * swell) +
             Math.sin(clock * 0.55 + b.r[2] * TAU) * 9 + b.hover * 20;
           scale = (airWidth / w0) * (0.82 + 0.36 * b.r[6]) * (1 - 0.3 * dive) * (1 + b.hover * 0.08);
+
+          // Gentle cursor wake: nearby drifting books softly bank toward the pointer.
+          let wakeRx = 0;
+          let wakeRy = 0;
+          if (ptrActive > 0.005 && dim < 0.98) {
+            const proj = D / Math.max(100, D - pz);
+            const dx = px * proj - ptrX;
+            const dy = py * proj - ptrY;
+            const dist = Math.hypot(dx, dy);
+            if (dist < wakeRadius) {
+              const w = (1 - smoothstep(0, wakeRadius, dist)) * ptrActive * (1 - dim);
+              const inv = dist > 1 ? 1 / dist : 0;
+              const push = w * (1 - b.hover);
+              px += dx * inv * push * 16;
+              py += dy * inv * push * 13;
+              pz += w * 14;
+              wakeRx = -(dy / wakeRadius) * w * 0.32;
+              wakeRy = (dx / wakeRadius) * w * 0.38;
+            }
+          }
+
           const calm = 1 - b.hover * 0.6;
           rotation = euler(
-            ((b.r[3] - 0.5) * 0.5 + Math.sin(clock * 0.31 + b.r[4] * TAU) * 0.2) * calm,
-            ((b.r[4] - 0.5) * 0.7 + Math.cos(clock * 0.27 + b.r[3] * TAU) * 0.26) * calm,
+            ((b.r[3] - 0.5) * 0.5 + Math.sin(clock * 0.31 + b.r[4] * TAU) * 0.2) * calm + wakeRx,
+            ((b.r[4] - 0.5) * 0.7 + Math.cos(clock * 0.27 + b.r[3] * TAU) * 0.26) * calm + wakeRy,
             ((b.r[8] - 0.5) * 0.62 + Math.sin(clock * 0.19 + b.r[9] * TAU) * 0.07) * calm,
           );
           alpha = edge * (1 - smoothstep(0, CALL, b.land));
@@ -982,7 +1140,8 @@ export async function createEngine(options: Options): Promise<Engine | null> {
         Math.abs(instances[o + 2]) * w0 * 0.5 +
         Math.abs(instances[o + 6]) * h0 * 0.5 +
         Math.abs(instances[o + 10]) * t0 * 0.5;
-      instances[o + 26] = mix(-t0, pz - rise - 30, smooth(b.held));
+      const shelfGround = mix(-t0, -w0, spineE);
+      instances[o + 26] = mix(shelfGround, pz - rise - 30, smooth(b.held));
       instances[o + 27] = b.r[9] + (b.def.read ? 2 : 0);
       const adrift = !still && b.land < CALL;
       // Active held book gets the top slab, departing held book one slab below,
@@ -996,6 +1155,8 @@ export async function createEngine(options: Options): Promise<Engine | null> {
               ? flightOrder[i]
               : 0;
       instances[o + 29] = count + 3;
+      instances[o + 30] = b.back;
+      instances[o + 31] = 0;
 
       if (outAlpha <= 0) continue;
       if (b.held <= 0.001) {
@@ -1131,6 +1292,11 @@ export async function createEngine(options: Options): Promise<Engine | null> {
       maxScroll = Math.max(0, document.documentElement.scrollHeight - viewH);
       wake();
     },
+    setViewMode(mode) {
+      if (mode === viewMode) return;
+      viewMode = mode;
+      wake();
+    },
     setHover(index, tx = 0, ty = 0) {
       for (let i = 0; i < count; i++) {
         const on = i === index;
@@ -1139,6 +1305,16 @@ export async function createEngine(options: Options): Promise<Engine | null> {
           state[i].txTo = tx;
           state[i].tyTo = ty;
         }
+      }
+      wake();
+    },
+    setPointer(clientX, clientY) {
+      if (clientX === null || clientY === null) {
+        ptrOn = 0;
+      } else {
+        ptrTargetX = clientX - stageW / 2;
+        ptrTargetY = viewH / 2 - clientY;
+        ptrOn = 1;
       }
       wake();
     },
@@ -1199,9 +1375,11 @@ export async function createEngine(options: Options): Promise<Engine | null> {
           b.pitch = 0;
         }
         b.yawVelocity = 0;
+        b.flipGoal = null;
         if (b.land < CALL && b.uHold === null) {
           b.uHold = fract(b.u + clock * FLOW);
         }
+        renderBackCover(next);
         void loadCloseup(next);
       } else {
         closeupToken++;
@@ -1215,6 +1393,7 @@ export async function createEngine(options: Options): Promise<Engine | null> {
     drag(dx, dy) {
       if (selected < 0) return;
       const b = state[selected];
+      b.flipGoal = null;
       const now = performance.now();
       const dtDrag = lastDragTime ? clamp((now - lastDragTime) / 1000, 0.004, 0.05) : 1 / 60;
       lastDragTime = now;
@@ -1224,6 +1403,26 @@ export async function createEngine(options: Options): Promise<Engine | null> {
       b.yawVelocity = mix(b.yawVelocity, instVel, 0.55);
       b.pitch = clamp(b.pitch + dy * 0.006, -0.75, 0.75);
       dragging = 0.08;
+      wake();
+    },
+    flip() {
+      if (selected < 0) return;
+      const b = state[selected];
+      b.yawVelocity = 0;
+      const base = b.flipGoal !== null ? b.flipGoal : b.userYaw;
+      // Wrap current total yaw into [-π, π] to decide whether we are facing front or back.
+      const total = 0.62 + base;
+      const wrapped = ((((total + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
+      if (Math.abs(wrapped) < Math.PI / 2) {
+        // Turn cleanly to show the ex libris back cover squarely.
+        b.flipGoal = base + (Math.PI - wrapped);
+      } else {
+        // Take the shortest smooth arc back to the front 3/4 hero angle.
+        let delta = 0.62 - wrapped;
+        if (delta > Math.PI) delta -= TAU;
+        if (delta < -Math.PI) delta += TAU;
+        b.flipGoal = base + delta;
+      }
       wake();
     },
     wake,

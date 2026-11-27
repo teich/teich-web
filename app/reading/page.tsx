@@ -16,8 +16,18 @@ const bodyFont = Lora({
 });
 
 export const metadata: Metadata = {
-  title: "Reading",
-  description: "Books Oren has read, loved, and plans to read.",
+  title: "Reading — Oren Teich",
+  description: "The books I've read that left an impact, and the to-read pile that will.",
+  openGraph: {
+    title: "Reading — Oren Teich",
+    description: "The books I've read that left an impact, and the to-read pile that will.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Reading — Oren Teich",
+    description: "The books I've read that left an impact, and the to-read pile that will.",
+  },
 };
 
 export default function ReadingPage() {

@@ -19,7 +19,7 @@ struct Book {
   dims: vec4f,  // width, height, thickness, texture layer
   tint: vec4f,  // jacket colour (linear), alpha
   misc: vec4f,  // cover loaded, high-res cover, ground z, seed (+2 if read)
-  order: vec4f, // depth slab, slab count
+  order: vec4f, // depth slab, slab count, back-cover blend, unused
 };
 
 @group(0) @binding(0) var<uniform> G: Globals;
@@ -28,6 +28,7 @@ struct Book {
 @group(0) @binding(3) var covers: texture_2d_array<f32>;
 @group(0) @binding(4) var spines: texture_2d_array<f32>;
 @group(0) @binding(5) var closeup: texture_2d<f32>;
+@group(0) @binding(6) var backCover: texture_2d<f32>;
 
 fn encode(c: vec3f) -> vec3f {
   let lo = c * 12.92;
@@ -116,17 +117,30 @@ fn fs(f: VOut) -> @location(0) vec4f {
   let board = boardOf(b);
 
   let uvCover = vec2f(f.local.x / w + 0.5, 0.5 - f.local.y / h);
+  let uvBack = vec2f(0.5 - f.local.x / w, 0.5 - f.local.y / h);
   let uvSpine = vec2f(f.local.z / t + 0.5, 0.5 - f.local.y / h);
   let coverA = textureSampleBias(covers, samp, uvCover, layer, -0.15).rgb;
   let coverB = textureSampleBias(closeup, samp, uvCover, -0.15).rgb;
+  let backTex = textureSampleBias(backCover, samp, uvBack, -0.15).rgb;
   let spine = textureSample(spines, samp, uvSpine, layer).rgb;
   let fz = fwidth(f.local.z);
+  // Subtle anti-aliased cloth weave in local book coordinates.
+  let weaveCoord = select(f.local.xy, f.local.zy, abs(f.face.x) > 0.5) * 1.15;
+  let weaveFw = max(fwidth(weaveCoord.x), fwidth(weaveCoord.y));
+  let weaveFade = 1.0 - smoothstep(0.25, 0.85, weaveFw);
+  let weave = (sin(weaveCoord.x * 6.2831853) + sin(weaveCoord.y * 6.2831853)) * 0.5 * weaveFade;
+  let weaveDx = cos(weaveCoord.x * 6.2831853) * weaveFade;
+  let weaveDy = cos(weaveCoord.y * 6.2831853) * weaveFade;
 
   var N = normalize(f.normal);
+  let tX = normalize((b.model * vec4f(1.0, 0.0, 0.0, 0.0)).xyz);
+  let tY = normalize((b.model * vec4f(0.0, 1.0, 0.0, 0.0)).xyz);
+  let tZ = normalize((b.model * vec4f(0.0, 0.0, 1.0, 0.0)).xyz);
   let V = normalize(G.camPos - f.world);
   let jacket = b.tint.rgb;
   var albedo = jacket;
   var gloss = 0.35;
+  var foilTint = vec3f(1.0);
 
   if (f.part == 4u) {
     // Ribbon marker with a swallowtail end.
@@ -153,23 +167,32 @@ fn fs(f: VOut) -> @location(0) vec4f {
     let gx = (uvCover.x - 0.048) / 0.016;
     let groove = exp(-gx * gx);
     albedo *= 1.0 - 0.16 * groove;
-    N = normalize(N + (b.model * vec4f(1.0, 0.0, 0.0, 0.0)).xyz * (-gx * groove * 0.35));
+    let stock = mix(0.036, 0.012, b.misc.x);
+    albedo *= 1.0 + stock * 0.55 * weave;
+    N = normalize(N + tX * (-gx * groove * 0.35 + weaveDx * stock) + tY * (weaveDy * stock));
     // Turned edges catch a little less light.
     let edge = min(min(uvCover.x, 1.0 - uvCover.x) * w, min(uvCover.y, 1.0 - uvCover.y) * h);
     albedo *= mix(0.86, 1.0, smoothstep(0.0, 1.6, edge));
     gloss = 1.0;
   } else if (f.face.z < -0.5) {
     let gx = (uvCover.x - 0.048) / 0.016;
-    albedo = jacket * (1.0 - 0.14 * exp(-gx * gx)) * mix(0.9, 1.0, uvCover.y);
-    gloss = 0.8;
+    let plain = jacket * mix(0.9, 1.0, uvCover.y);
+    let backSurface = mix(plain, backTex, b.order.z);
+    let foil = smoothstep(0.08, 0.28, length(backTex - jacket)) * b.order.z;
+    albedo = backSurface * (1.0 - 0.14 * exp(-gx * gx)) * (1.0 + 0.022 * weave);
+    N = normalize(N + tX * (weaveDx * 0.042) + tY * (weaveDy * 0.042));
+    gloss = mix(0.62, 1.28, foil);
+    foilTint = mix(vec3f(1.0), vec3f(1.0, 0.94, 0.82), foil);
   } else if (f.face.x < -0.5) {
-    // Spine, gently rounded.
+    // Spine, gently rounded, with subtle linen tooth and foil lettering sheen.
     let s = uvSpine.x * 2.0 - 1.0;
-    albedo = spine * (1.0 - 0.22 * s * s * s * s);
-    N = normalize(N + (b.model * vec4f(0.0, 0.0, 1.0, 0.0)).xyz * s * 0.55);
-    gloss = 0.7;
+    let foil = smoothstep(0.06, 0.24, length(spine - jacket));
+    albedo = spine * (1.0 - 0.22 * s * s * s * s) * (1.0 + 0.02 * weave);
+    N = normalize(N + tZ * (s * 0.55 + weaveDx * 0.038) + tY * (weaveDy * 0.038));
+    gloss = mix(0.55, 1.35, foil);
+    foilTint = mix(vec3f(1.0), vec3f(1.0, 0.94, 0.82), foil);
   } else {
-    albedo = jacket * 0.78;
+    albedo = jacket * 0.78 * (1.0 + 0.018 * weave);
   }
 
   let L = G.lightDir;
@@ -181,7 +204,7 @@ fn fs(f: VOut) -> @location(0) vec4f {
 
   let R = reflect(-V, N);
   let s = max(dot(R, G.softbox), 0.0);
-  lit += gloss * (0.20 * smoothstep(0.93, 0.995, s) + 0.07 * pow(s, 5.0));
+  lit += foilTint * gloss * (0.20 * smoothstep(0.93, 0.995, s) + 0.07 * pow(s, 5.0));
 
   // Soft shoulder instead of a hard clip.
   let over = max(lit - vec3f(0.86), vec3f(0.0));
