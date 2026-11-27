@@ -18,18 +18,26 @@ function inkFor(color: [number, number, number]) {
   return luminance(color) > 0.52 ? "rgb(32 27 22 / 0.9)" : "rgb(247 240 224 / 0.94)";
 }
 
-function surface(width: number, height: number) {
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
+function surface(width: number, height: number, target?: HTMLCanvasElement) {
+  const canvas = target ?? document.createElement("canvas");
+  if (canvas.width !== width) canvas.width = width;
+  if (canvas.height !== height) canvas.height = height;
   return canvas;
 }
 
 /** The spine as seen with the front cover to the right: title running down,
  *  letter tops toward the front, author at the foot. */
-export function drawSpine(book: Printable, width: number, height: number, family: string) {
-  const canvas = surface(width, height);
+export function drawSpine(
+  book: Printable,
+  width: number,
+  height: number,
+  family: string,
+  target?: HTMLCanvasElement,
+) {
+  const canvas = surface(width, height, target);
   const ctx = canvas.getContext("2d")!;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
   const title = book.title.split(":")[0];
   const surname = book.author.split(" ").at(-1) ?? "";
   // Work in units where the spine is `height` tall and its true width wide,
@@ -70,9 +78,17 @@ export function drawSpine(book: Printable, width: number, height: number, family
 }
 
 /** A typeset cloth cover: jacket colour, a ruled frame, title and author. */
-export function drawCloth(book: Printable, width: number, height: number, family: string) {
-  const canvas = surface(width, height);
+export function drawCloth(
+  book: Printable,
+  width: number,
+  height: number,
+  family: string,
+  target?: HTMLCanvasElement,
+) {
+  const canvas = surface(width, height, target);
   const ctx = canvas.getContext("2d")!;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
   // The texture is stretched to the book's real proportions, so set type in
   // those proportions.
   const real = height * book.aspect;

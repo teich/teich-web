@@ -86,6 +86,18 @@ export default function ReadingRoom() {
   const selected = selectedSlug ? (bySlug.get(selectedSlug) ?? null) : null;
 
   // ── Renderer ───────────────────────────────────────────────────────────
+  const measureBox = useCallback(() => {
+    const engine = engineRef.current;
+    const holder = boxRef.current?.getBoundingClientRect();
+    if (!engine || !holder) return;
+    engine.setBox({
+      x: holder.left + holder.width / 2,
+      y: holder.top + holder.height / 2,
+      w: holder.width,
+      h: holder.height,
+    });
+  }, []);
+
   const measure = useCallback(() => {
     const engine = engineRef.current;
     const stage = stageRef.current;
@@ -102,16 +114,8 @@ export default function ReadingRoom() {
         };
       }),
     );
-    const holder = boxRef.current?.getBoundingClientRect();
-    if (holder) {
-      engine.setBox({
-        x: holder.left + holder.width / 2,
-        y: holder.top + holder.height / 2,
-        w: holder.width,
-        h: holder.height,
-      });
-    }
-  }, []);
+    measureBox();
+  }, [measureBox]);
 
   useEffect(() => {
     let dead = false;
@@ -244,7 +248,7 @@ export default function ReadingRoom() {
 
   // ── Pointer ────────────────────────────────────────────────────────────
   const tilt = (index: number) => (event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (event.pointerType === "touch") return;
+    if (event.pointerType === "touch" || drifting.current !== null) return;
     const rect = event.currentTarget.getBoundingClientRect();
     engineRef.current?.setHover(
       index,
@@ -284,13 +288,18 @@ export default function ReadingRoom() {
           engineRef.current?.setHover(null);
           open(library[hit].slug, false);
         }}
-        onPointerMove={(event) => {
+        onPointerMoveCapture={(event) => {
           if (event.pointerType === "touch") return;
           const hit = engineRef.current?.pick(event.clientX, event.clientY) ?? null;
           if (hit === drifting.current) return;
           drifting.current = hit;
           event.currentTarget.toggleAttribute("data-pick", hit !== null);
           engineRef.current?.setHover(hit);
+        }}
+        onPointerLeave={(event) => {
+          drifting.current = null;
+          event.currentTarget.removeAttribute("data-pick");
+          engineRef.current?.setHover(null);
         }}
       >
         <nav className="masthead" aria-label="Site">
@@ -364,7 +373,9 @@ export default function ReadingRoom() {
                     }}
                     onClick={() => open(book.slug)}
                     onPointerMove={tilt(book.index)}
-                    onPointerLeave={() => engineRef.current?.setHover(null)}
+                    onPointerLeave={() => {
+                      if (drifting.current === null) engineRef.current?.setHover(null);
+                    }}
                     onFocus={(event) => {
                       if (event.currentTarget.matches(":focus-visible"))
                         engineRef.current?.setHover(book.index);
@@ -412,7 +423,7 @@ export default function ReadingRoom() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="detail-title"
-          onScroll={measure}
+          onScroll={measureBox}
         >
           <button type="button" className="detail-close" ref={closeRef} onClick={close}>
             Close

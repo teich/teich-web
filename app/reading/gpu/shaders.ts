@@ -117,8 +117,8 @@ fn fs(f: VOut) -> @location(0) vec4f {
 
   let uvCover = vec2f(f.local.x / w + 0.5, 0.5 - f.local.y / h);
   let uvSpine = vec2f(f.local.z / t + 0.5, 0.5 - f.local.y / h);
-  let coverA = textureSampleBias(covers, samp, uvCover, layer, -0.35).rgb;
-  let coverB = textureSampleBias(closeup, samp, uvCover, -0.25).rgb;
+  let coverA = textureSampleBias(covers, samp, uvCover, layer, -0.15).rgb;
+  let coverB = textureSampleBias(closeup, samp, uvCover, -0.15).rgb;
   let spine = textureSample(spines, samp, uvSpine, layer).rgb;
   let fz = fwidth(f.local.z);
 
@@ -190,6 +190,48 @@ fn fs(f: VOut) -> @location(0) vec4f {
   let a = b.tint.a;
   return vec4f(encode(lit) * a, a);
 }
+
+@fragment
+fn fsDepth(f: VOut) -> @location(0) vec4f {
+  if (f.part == 4u) {
+    let b = books[f.inst];
+    let rx = (f.local.x / b.dims.x - 0.135) / 0.035;
+    let ry = (-f.local.y / b.dims.y - 0.5) / 0.045;
+    if (ry > 0.6 + 0.4 * abs(rx)) {
+      discard;
+    }
+  }
+  return vec4f(0.0);
+}
+`;
+
+export const MIP_WGSL = /* wgsl */ `
+@group(0) @binding(0) var mipSamp: sampler;
+@group(0) @binding(1) var mipSrc: texture_2d<f32>;
+
+struct MipOut {
+  @builtin(position) pos: vec4f,
+  @location(0) uv: vec2f,
+};
+
+@vertex
+fn vs(@builtin(vertex_index) i: u32) -> MipOut {
+  var pts = array<vec2f, 3>(
+    vec2f(-1.0, -1.0),
+    vec2f(3.0, -1.0),
+    vec2f(-1.0, 3.0),
+  );
+  let p = pts[i];
+  var o: MipOut;
+  o.pos = vec4f(p, 0.0, 1.0);
+  o.uv = vec2f(p.x * 0.5 + 0.5, 0.5 - p.y * 0.5);
+  return o;
+}
+
+@fragment
+fn fs(f: MipOut) -> @location(0) vec4f {
+  return textureSample(mipSrc, mipSamp, f.uv);
+}
 `;
 
 export const SHADOW_WGSL = /* wgsl */ `${COMMON}
@@ -197,7 +239,7 @@ struct VOut {
   @builtin(position) pos: vec4f,
   @location(0) p: vec2f,
   @location(1) @interpolate(flat) drop: vec4f,   // centre, half extents along its own axes
-  @location(2) @interpolate(flat) axes: vec4f,   // world → shadow axes (two rows)
+  @location(2) @interpolate(flat) axes: vec4f,   // orthonormal shadow axes (e1, e2)
   @location(3) @interpolate(flat) halo: vec4f,   // centre, half extents
   @location(4) @interpolate(flat) soft: vec4f,   // drop sigma, drop alpha, halo sigma, halo alpha
 };
@@ -205,6 +247,12 @@ struct VOut {
 @vertex
 fn vs(@builtin(vertex_index) vi: u32, @builtin(instance_index) i: u32) -> VOut {
   let b = books[i];
+  var o: VOut;
+  if (b.tint.a <= 0.002) {
+    o.pos = vec4f(0.0, 0.0, 2.0, 1.0);
+    return o;
+  }
+
   let c = b.model[3].xyz;
   let ax = b.model[0].xyz * b.dims.x * 0.5;
   let ay = b.model[1].xyz * b.dims.y * 0.5;
@@ -212,18 +260,19 @@ fn vs(@builtin(vertex_index) vi: u32, @builtin(instance_index) i: u32) -> VOut {
   let ground = b.misc.z;
   let slope = G.lightDir.xy / G.lightDir.z;
 
-  // Slide the book along the light onto the paper. Its cover lands as a
-  // parallelogram; the thickness just fattens that a little.
+  // Project the book along the light onto the paper and align an orthonormal
+  // shadow basis to its tall axis so spinning edge-on never snaps or inverts.
   let px = ax.xy - slope * ax.z;
   let py = ay.xy - slope * ay.z;
   let pz = az.xy - slope * az.z;
-  let lx = max(length(px), 0.001);
-  let ly = max(length(py), 0.001);
-  let ux = px / lx;
-  let uy = py / ly;
-  let cross = ux.x * uy.y - ux.y * uy.x;
-  let det = select(-1.0, 1.0, cross >= 0.0) * max(abs(cross), 0.3);
-  let half = vec2f(lx + abs(dot(pz, ux)), ly + abs(dot(pz, uy)));
+  let lx = length(px);
+  let ly = length(py);
+  let e1 = select(px / max(lx, 0.001), py / max(ly, 0.001), ly >= lx * 0.25);
+  let e2 = vec2f(-e1.y, e1.x);
+  let half = vec2f(
+    abs(dot(px, e1)) + abs(dot(py, e1)) + abs(dot(pz, e1)),
+    abs(dot(px, e2)) + abs(dot(py, e2)) + abs(dot(pz, e2)),
+  );
   let dropC = c.xy - slope * (c.z - ground);
   let haloHalf = abs(ax.xy) + abs(ay.xy) + abs(az.xy);
 
@@ -231,25 +280,33 @@ fn vs(@builtin(vertex_index) vi: u32, @builtin(instance_index) i: u32) -> VOut {
   let gap = max(0.0, c.z - ground - rise);
   let dropSigma = 1.4 + rise * 0.11 + gap * 0.17;
   let haloSigma = 9.0 + rise * 0.30 + gap * 0.5;
-  let dropAlpha = 0.40 / (1.0 + gap / 190.0);
-  let haloAlpha = 0.20 / (1.0 + gap / 45.0);
+  let dropAlpha = (0.40 / (1.0 + gap / 190.0)) * b.tint.a;
+  let rawHalo = (0.20 / (1.0 + gap / 45.0)) * b.tint.a;
+  let haloAlpha = rawHalo * smoothstep(0.003, 0.009, rawHalo);
 
-  let reach = half.x * abs(ux) + half.y * abs(uy) + vec2f(dropSigma * 4.5);
-  let lo = min(dropC - reach, c.xy - haloHalf - haloSigma * 3.2);
-  let hi = max(dropC + reach, c.xy + haloHalf + haloSigma * 3.2);
+  // Size each shadow quad tightly to the visible Gaussian tail.
+  let dropK = clamp(1.4 + 2.1 * sqrt(dropAlpha), 1.6, 3.1);
+  let reach = half.x * abs(e1) + half.y * abs(e2) + vec2f(dropSigma * dropK);
+  var lo = dropC - reach;
+  var hi = dropC + reach;
+  if (haloAlpha > 0.0) {
+    let haloK = clamp(1.3 + 2.2 * sqrt(haloAlpha), 1.5, 2.9);
+    let haloReach = haloHalf + vec2f(haloSigma * haloK);
+    lo = min(lo, c.xy - haloReach);
+    hi = max(hi, c.xy + haloReach);
+  }
   var quad = array<vec2f, 6>(
     vec2f(0.0, 0.0), vec2f(1.0, 0.0), vec2f(0.0, 1.0),
     vec2f(0.0, 1.0), vec2f(1.0, 0.0), vec2f(1.0, 1.0),
   );
   let p = mix(lo, hi, quad[vi]);
 
-  var o: VOut;
   o.pos = G.viewProj * vec4f(p, ground, 1.0);
   o.p = p;
   o.drop = vec4f(dropC, half);
-  o.axes = vec4f(uy.y, -uy.x, -ux.y, ux.x) / det;
+  o.axes = vec4f(e1, e2);
   o.halo = vec4f(c.xy, haloHalf);
-  o.soft = vec4f(dropSigma / sqrt(abs(det)), dropAlpha * b.tint.a, haloSigma, haloAlpha * b.tint.a);
+  o.soft = vec4f(dropSigma, dropAlpha, haloSigma, haloAlpha);
   return o;
 }
 
@@ -272,7 +329,7 @@ fn fs(f: VOut) -> @location(0) vec4f {
   let d = f.p - f.drop.xy;
   let along = vec2f(dot(d, f.axes.xy), dot(d, f.axes.zw));
   let drop = f.soft.y * blurred(along, f.drop.zw, f.soft.x);
-  let halo = f.soft.w * blurred(f.p - f.halo.xy, f.halo.zw, f.soft.z);
+  let halo = select(0.0, f.soft.w * blurred(f.p - f.halo.xy, f.halo.zw, f.soft.z), f.soft.w > 0.0);
   let a = (1.0 - (1.0 - drop) * (1.0 - halo)) * G.shadowStrength;
   return vec4f(encode(G.shadowColor) * a, a);
 }
