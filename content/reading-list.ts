@@ -248,6 +248,7 @@ export const books: Book[] = [
     status: "read",
     shelf: "Modern Systems & Their Discontents",
     dateRead: "2026-09-08",
+    rating: 3,
     note: "A book I wish had been a long essay, but its point lands: we cannot fight the future; we have to create it. The dynamism-versus-stasis frame is clarifying, though reality needs more nuance than the dichotomy allows.",
     aliases: [
       "The Future and Its Enemies: The Growing Conflict Over Creativity, Enterprise, and Progress",
