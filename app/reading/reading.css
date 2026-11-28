@@ -399,8 +399,10 @@ html:has(.reading[data-detail]) {
 }
 
 .reading .books {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(9.25rem, 40%), 1fr));
+  --cover-h: clamp(13.5rem, 16vw, 17.5rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   column-gap: clamp(1.25rem, 3.2vw, 3.25rem);
   row-gap: clamp(3rem, 7vh, 4.75rem);
   margin: 0;
@@ -408,21 +410,21 @@ html:has(.reading[data-detail]) {
   list-style: none;
 }
 
-/* Covers stand on a shared baseline; captions hang from it. */
+/* Every cover in a row is the same height; width follows the book's real
+   proportions, so tops and bottoms both line up and captions hang level. */
 .reading .book {
-  display: grid;
-  grid-row: span 2;
-  grid-template-rows: subgrid;
-  row-gap: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  width: calc(var(--cover-h) * var(--aspect));
   scroll-margin-top: 28vh;
 }
 
 .reading .cover {
   position: relative;
   display: block;
-  align-self: end;
   width: 100%;
-  aspect-ratio: var(--aspect);
+  height: var(--cover-h);
 
   &:focus-visible {
     outline-offset: 10px;
@@ -484,6 +486,7 @@ html:has(.reading[data-detail]) {
 
 .reading[data-view="spines"] .book {
   display: block;
+  width: auto;
 }
 
 .reading[data-view="spines"] .cover {
@@ -983,7 +986,7 @@ html:has(.reading[data-detail]) {
   }
 
   .reading .books {
-    grid-template-columns: repeat(auto-fill, minmax(min(7.25rem, 40%), 1fr));
+    --cover-h: clamp(9.5rem, 42vw, 12.5rem);
   }
 
   .reading .caption h3 {
