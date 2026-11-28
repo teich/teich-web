@@ -14,7 +14,7 @@ const eslintConfig = [...compat.extends("next/core-web-vitals", "next/typescript
     'react/no-unescaped-entities': 'off',
   },
 }, {
-  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"]
+  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", ".cloudflare/**", "next-env.d.ts"]
 }];
 
 export default eslintConfig;

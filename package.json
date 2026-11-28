@@ -2,12 +2,14 @@
   "name": "teich",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "covers": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/fetch-covers.mjs"
+    "covers": "node scripts/fetch-covers.mjs",
+    "deploy": "npm run build && cf deploy ./out"
   },
   "dependencies": {
     "next": "15.5.9",
@@ -20,6 +22,7 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@webgpu/types": "^0.1.74",
+    "cf": "^1.0.0-rc.6",
     "eslint": "^9",
     "eslint-config-next": "15.5.7",
     "tailwindcss": "^4",

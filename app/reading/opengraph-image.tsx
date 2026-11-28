@@ -3,6 +3,7 @@ import path from "node:path";
 import { ImageResponse } from "next/og";
 import { library } from "./library";
 
+export const dynamic = "force-static";
 export const alt = "Oren Teich's Reading List";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
