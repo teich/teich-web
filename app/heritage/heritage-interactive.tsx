@@ -198,16 +198,6 @@ export function HeritageHeader() {
           >
             Home
           </Link>
-          <Link
-            href="/crest"
-            className={`heritage-link ${
-              scrolled
-                ? "text-[var(--h-text-muted)] hover:text-[var(--h-text)]"
-                : "text-[var(--h-text-on-dark-muted)] hover:text-[var(--h-text-on-dark)]"
-            }`}
-          >
-            Crest
-          </Link>
         </nav>
       </div>
     </header>

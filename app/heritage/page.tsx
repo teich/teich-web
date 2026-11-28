@@ -128,8 +128,8 @@ export default function HeritagePage() {
                 Pronounced <span className="text-[var(--h-text)]">/taɪç/</span>{" "}
                 in German,{" "}
                 <span className="text-[var(--h-text)]">/tajχ/</span> in Yiddish,
-                and usually <span className="text-[var(--h-text)]">/taɪk/</span>{" "}
-                in English.
+                and <span className="text-[var(--h-text)]">/taɪk/</span> or{" "}
+                <span className="text-[var(--h-text)]">/taɪʃ/</span> in English.
               </p>
             </div>
 
@@ -449,35 +449,43 @@ export default function HeritagePage() {
 
       {/* Footer & Colophon */}
       <footer className="border-t border-[var(--h-rule)] bg-[var(--h-page)]">
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-14 sm:px-10 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-[58ch]">
-            <p className="heritage-sans heritage-sm font-medium text-[var(--h-text)]">
-              Sources and reference works
-            </p>
-            <p className="heritage-sans heritage-sm mt-2 text-[var(--h-text-muted)]">
-              Etymology drawn from Wolfgang Pfeifer&apos;s{" "}
-              <em>Etymologisches Wörterbuch des Deutschen</em> (via DWDS).
-              Surname distribution and origins drawn from the{" "}
-              <em>Digitales Familiennamenwörterbuch Deutschlands</em> (DFD),
-              Alexander Beider&apos;s dictionaries of Ashkenazi surnames from
-              Galicia and the Kingdom of Poland, and historical documentation on
-              the 1787 Habsburg <em>Patent über die Judennamen</em>.
-            </p>
-          </div>
+        <div className="mx-auto max-w-6xl px-6 py-14 sm:px-10">
+          <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-start md:gap-12">
+            <div>
+              <p className="heritage-sans heritage-sm font-medium text-[var(--h-text)]">
+                About the crest on the front page
+              </p>
+              <p className="heritage-sans heritage-sm mt-2 text-[var(--h-text-muted)]">
+                Entirely invented. Heraldry calls a visual pun on a name canting
+                arms: a pond for <em>Teich</em>, a heron, and a Latin motto (
+                <em>Ex aqua vita</em>) made up for fun, because a domain ought
+                to have something waiting at the door.
+              </p>
+            </div>
 
-          <div className="heritage-sans heritage-sm flex items-center gap-6">
-            <Link
-              href="/"
-              className="heritage-link border-b border-[var(--h-rule)] pb-0.5 text-[var(--h-text-muted)] hover:border-[var(--h-accent)] hover:text-[var(--h-accent)]"
-            >
-              Return home
-            </Link>
-            <Link
-              href="/crest"
-              className="heritage-link border-b border-[var(--h-rule)] pb-0.5 text-[var(--h-text-muted)] hover:border-[var(--h-accent)] hover:text-[var(--h-accent)]"
-            >
-              View crest
-            </Link>
+            <div>
+              <p className="heritage-sans heritage-sm font-medium text-[var(--h-text)]">
+                Sources and reference works
+              </p>
+              <p className="heritage-sans heritage-sm mt-2 text-[var(--h-text-muted)]">
+                Etymology drawn from Wolfgang Pfeifer&apos;s{" "}
+                <em>Etymologisches Wörterbuch des Deutschen</em> (via DWDS).
+                Surname distribution and origins drawn from the{" "}
+                <em>Digitales Familiennamenwörterbuch Deutschlands</em> (DFD),
+                Alexander Beider&apos;s dictionaries of Ashkenazi surnames from
+                Galicia and the Kingdom of Poland, and historical documentation
+                on the 1787 Habsburg <em>Patent über die Judennamen</em>.
+              </p>
+            </div>
+
+            <div className="heritage-sans heritage-sm md:pt-0.5">
+              <Link
+                href="/"
+                className="heritage-link border-b border-[var(--h-rule)] pb-0.5 text-[var(--h-text-muted)] hover:border-[var(--h-accent)] hover:text-[var(--h-accent)]"
+              >
+                Return home
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
