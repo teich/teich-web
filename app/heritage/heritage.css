@@ -1,0 +1,136 @@
+.heritage-page {
+  --h-ink-surface: #0c1a1f;
+  --h-ink-surface-elevated: #12252c;
+  --h-page: #f4f6f5;
+  --h-surface-subtle: #e7eeed;
+  --h-text: #121c1f;
+  --h-text-muted: #46575c;
+  --h-text-on-dark: #f2f6f6;
+  --h-text-on-dark-muted: #b0c4c7;
+  --h-accent: #185a61;
+  --h-accent-hover: #114449;
+  --h-accent-on-dark: #8fd0d4;
+  --h-rule: rgba(18, 28, 31, 0.13);
+  --h-rule-on-dark: rgba(242, 246, 246, 0.15);
+
+  --text-heading: clamp(1.75rem, 2.6vw, 2.25rem);
+  --text-body: 1.0625rem;
+  --text-sm: 0.875rem;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  background-color: var(--h-page);
+  color: var(--h-text);
+  font-family: var(--font-heritage-serif), Georgia, serif;
+}
+
+.heritage-sans {
+  font-family: var(--font-heritage-sans), system-ui, -apple-system, sans-serif;
+}
+
+.heritage-serif {
+  font-family: var(--font-heritage-serif), Georgia, serif;
+}
+
+.heritage-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.heritage-h1 {
+  font-size: clamp(4.75rem, 12.5vw, 9.75rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-weight: 400;
+}
+
+.heritage-h2 {
+  font-size: var(--text-heading);
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+  font-weight: 400;
+}
+
+.heritage-body {
+  font-size: var(--text-body);
+  line-height: 1.72;
+}
+
+.heritage-sm {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.heritage-header {
+  transition:
+    background-color 220ms var(--ease-out),
+    border-color 220ms var(--ease-out),
+    color 220ms var(--ease-out);
+}
+
+.heritage-cta {
+  transition:
+    background-color 180ms var(--ease-out),
+    color 180ms var(--ease-out),
+    transform 180ms var(--ease-out);
+}
+
+.heritage-cta:hover {
+  transform: translateY(-1px);
+}
+
+.heritage-link {
+  transition:
+    color 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    opacity 160ms var(--ease-out);
+}
+
+.heritage-tab {
+  transition:
+    background-color 180ms var(--ease-out),
+    color 180ms var(--ease-out);
+}
+
+.heritage-diagram-layer {
+  transition:
+    opacity 240ms var(--ease-out),
+    transform 240ms var(--ease-out);
+}
+
+@keyframes heritageFadeRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heritage-hero-enter {
+  animation: heritageFadeRise 520ms var(--ease-out) both;
+}
+
+.heritage-hero-enter-delayed {
+  animation: heritageFadeRise 580ms var(--ease-out) 90ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heritage-header,
+  .heritage-cta,
+  .heritage-link,
+  .heritage-tab,
+  .heritage-diagram-layer {
+    transition: none;
+  }
+
+  .heritage-cta:hover {
+    transform: none;
+  }
+
+  .heritage-hero-enter,
+  .heritage-hero-enter-delayed {
+    animation: none;
+  }
+}
