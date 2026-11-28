@@ -90,6 +90,10 @@ const engineBooks = library.map((book) => ({
   statusLine: statusLine(book),
 }));
 
+
+const OPENED = "readingBookOpened";
+const openedHere = () => Boolean(window.history.state?.[OPENED]);
+
 export default function ReadingRoom() {
   const [filter, setFilter] = useState<Filter>("all");
   const [orderBy, setOrderBy] = useState<Order>("shelf");
@@ -109,7 +113,6 @@ export default function ReadingRoom() {
   const searchRef = useRef<HTMLInputElement>(null);
   const engineRef = useRef<Engine | null>(null);
   const slotRefs = useRef(new Map<string, HTMLButtonElement>());
-  const pushed = useRef(false);
   const returnTo = useRef<string | null>(null);
   const dragFrom = useRef<{ x: number; y: number; moved: number } | null>(null);
   const drifting = useRef<number | null>(null);
@@ -289,6 +292,9 @@ export default function ReadingRoom() {
   }, [measure]);
 
   // ── Which book is open lives in the URL hash ───────────────────────────
+  // The history entry we push when opening a book carries a marker, so Close
+  // knows whether "back" returns to the shelf. Keeping it on the entry (not in
+  // a ref) means it stays right after the browser's own back/forward.
   useEffect(() => {
     const sync = () => {
       const slug = decodeURIComponent(window.location.hash.slice(1));
@@ -305,11 +311,10 @@ export default function ReadingRoom() {
 
   const open = useCallback((slug: string, fromShelf = true) => {
     setCopied(false);
-    if (pushed.current) {
-      window.history.replaceState(null, "", `#${slug}`);
+    if (openedHere()) {
+      window.history.replaceState(window.history.state, "", `#${slug}`);
     } else {
-      window.history.pushState(null, "", `#${slug}`);
-      pushed.current = true;
+      window.history.pushState({ ...window.history.state, [OPENED]: true }, "", `#${slug}`);
       returnTo.current = fromShelf ? slug : null;
     }
     setSelectedSlug(slug);
@@ -317,11 +322,14 @@ export default function ReadingRoom() {
 
   const close = useCallback(() => {
     setCopied(false);
-    if (pushed.current) {
-      pushed.current = false;
+    if (openedHere()) {
       window.history.back();
     } else {
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      window.history.replaceState(
+        window.history.state,
+        "",
+        window.location.pathname + window.location.search,
+      );
     }
     setSelectedSlug(null);
   }, []);
@@ -333,7 +341,7 @@ export default function ReadingRoom() {
       const list = order.some((book) => book.slug === selectedSlug) ? order : library;
       const at = list.findIndex((book) => book.slug === selectedSlug);
       const next = list[(at + delta + list.length) % list.length];
-      window.history.replaceState(null, "", `#${next.slug}`);
+      window.history.replaceState(window.history.state, "", `#${next.slug}`);
       setSelectedSlug(next.slug);
     },
     [order, selectedSlug],
