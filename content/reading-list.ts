@@ -318,12 +318,6 @@ export const books: Book[] = [
     note: "Names the thing. Industrial modernity is not a set of problems to solve but a coherent machine systematically dissolving the human, the sacred, and the particular, written with the moral clarity of someone who stopped looking for a way to fix it and started asking how to stay human inside it.",
   },
   {
-    title: "Savage Gods",
-    author: "Paul Kingsnorth",
-    status: "to-read",
-    shelf: "Modernity & the Machine",
-  },
-  {
     title: "Ishmael",
     author: "Daniel Quinn",
     status: "read",
@@ -369,12 +363,6 @@ export const books: Book[] = [
     status: "to-read",
     shelf: "Myth & the Sacred",
     mentionedIn: [modernConsciousness],
-  },
-  {
-    title: "Smoke Hole",
-    author: "Martin Shaw",
-    status: "to-read",
-    shelf: "Myth & the Sacred",
   },
   {
     title: "Why Liberalism Failed",
@@ -548,12 +536,6 @@ export const books: Book[] = [
   },
   {
     title: "Nature and Madness",
-    author: "Paul Shepard",
-    status: "to-read",
-    shelf: "Land & the Living World",
-  },
-  {
-    title: "The Tender Carnivore and the Sacred Game",
     author: "Paul Shepard",
     status: "to-read",
     shelf: "Land & the Living World",
