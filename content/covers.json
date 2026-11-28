@@ -12,15 +12,15 @@
     "pages": 320
   },
   "accelerando-charles-stross": {
-    "w": 600,
-    "h": 800,
-    "color": "#3f3b3c",
+    "w": 745,
+    "h": 1200,
+    "color": "#aba2a1",
     "pages": 448
   },
   "across-realtime-vernor-vinge": {
-    "w": 282,
-    "h": 475,
-    "color": "#375063",
+    "w": 800,
+    "h": 1312,
+    "color": "#040e21",
     "pages": 532
   },
   "after-virtue-alasdair-macintyre": {
@@ -96,15 +96,15 @@
     "pages": 280
   },
   "glasshouse-charles-stross": {
-    "w": 600,
-    "h": 800,
-    "color": "#f6f7f8",
+    "w": 309,
+    "h": 500,
+    "color": "#d9e2e8",
     "pages": 368
   },
   "globalization-and-its-discontents-joseph-e-stiglitz": {
-    "w": 510,
-    "h": 680,
-    "color": "#2c2628",
+    "w": 318,
+    "h": 475,
+    "color": "#211f1f",
     "pages": 288
   },
   "hospicing-modernity-vanessa-machado-de-oliveira": {
@@ -401,9 +401,9 @@
     "pages": 256
   },
   "wisdom-of-the-mythtellers-sean-kane": {
-    "w": 305,
-    "h": 500,
-    "color": "#815e51",
+    "w": 800,
+    "h": 1358,
+    "color": "#946c5e",
     "pages": 280
   },
   "writing-down-the-bones-natalie-goldberg": {
